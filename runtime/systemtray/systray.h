@@ -1,0 +1,68 @@
+/* This file is part of the KDE Project
+   Copyright (c) 2008 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2010-2011 Serebriyskiy Artem <v.for.vandal@gmail.com>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
+#ifndef _NEPOMUK_SERVICE_SYSTRAY_H_
+#define _NEPOMUK_SERVICE_SYSTRAY_H_
+
+#include <KStatusNotifierItem>
+#include <QList>
+#include <KSharedConfig>
+
+class QAction;
+class KDualAction;
+class SystrayPlugin;
+
+namespace Nepomuk {
+
+
+    class SystemTray : public KStatusNotifierItem
+    {
+        Q_OBJECT
+        public:
+            SystemTray( QWidget* parent );
+            ~SystemTray();
+
+        private Q_SLOTS:
+            void slotConfigure();
+            void updateTooltip();
+            void pluginInitialized();
+
+        private:
+            void loadPlugins();
+            void finishOurInitialization();
+            KMenu * menu;
+            QList<QAction*> actions;
+            KSharedConfigPtr config;
+            QStringList toplevelActionNames(const QString & pluginName) const;
+            // This counter is used to count how many plugins are performing
+            // initialization in the moment. Each time init() is called,
+            // it's value is increased by one.
+            // It only increases in loadPlugins() function. After this function ends,
+            // it's value equal to the amount of loaded pugins.
+            // Each time pluginInitialized() is called ( that happens when plugin 
+            // has send a signal ) it's values is decreased by one
+            // When it's value reachs 0 this means that all plugins are now
+            // initialized.
+            // So we can finish overall initialization
+            int pluginsCurrentlyInitializing;
+    };
+}
+
+#endif
+
