@@ -226,6 +226,10 @@ namespace Nepomuk
              //virtual QString serviceErrorMessage() const ;
 
              virtual ~SystrayPlugin();
+
+             /*! \brief Return string name of ShortStatus value
+              */
+             static QString shortStatusToString(ShortStatus status);
          public Q_SLOTS:
             /*! \brief Initialization of the plugin
              * In this method you should perform all necessary initialization procedures
@@ -239,11 +243,11 @@ namespace Nepomuk
          Q_SIGNALS:
              /*! \brief Emit this signal when you short status has changed
               */
-             void shortStatusChanged();
+             void shortStatusChanged(Nepomuk::SystrayPlugin *);
 
              /*! \brief Emit this signal when your status message or error message has changed
               */
-             void statusMessageChanged();
+             void statusMessageChanged(Nepomuk::SystrayPlugin*);
 
              /*! \brief This signal is for system use. 
               * It is automatically emited when plugin finish initialization.

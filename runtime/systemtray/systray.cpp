@@ -35,12 +35,14 @@
 #include <KConfigGroup>
 #include <KDebug>
 #include <QAction>
+#include <QStringBuilder>
 #include <QtDebug>
 
 
 
 Nepomuk::SystemTray::SystemTray( QWidget* parent )
     : KStatusNotifierItem( parent )
+    //m_lastIndex(0)
 {
     setCategory( SystemServices );
     setStatus( Passive );
@@ -74,7 +76,8 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     loadPlugins();
 
 
-    //setContextMenu( menu );
+    setToolTipIconByName("nepomuk");
+    setToolTipTitle(i18n("Nepomuk"));
 
 
 
@@ -97,11 +100,6 @@ void Nepomuk::SystemTray::slotConfigure()
     QStringList args;
     args << "kcm_nepomuk";
     KToolInvocation::kdeinitExec("kcmshell4", args);
-}
-
-
-void Nepomuk::SystemTray::updateTooltip()
-{
 }
 
 
@@ -131,9 +129,18 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
     disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
                this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
               );
+    connect(plugin,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*)),
+            this,SLOT(updateToolTip(Nepomuk::SystrayPlugin*))
+           );
 
     // Add it to the factory
     m_factory->addClient(plugin);
+
+    // Assign index and add current status to the cache
+    m_pluginsIndexes[plugin] = m_statusCache.size();
+        m_statusCache.append(
+                pluginShortStatusString(plugin)
+                );
 #if 0
    // Get it actions
    KActionCollection * coll = plugin->actions();
@@ -187,9 +194,10 @@ void Nepomuk::SystemTray::finishOurInitialization()
     }
     //menu->addAction( configAction );
     setContextMenu(trayMenu);
-
-
     setAssociatedWidget( contextMenu() );
+
+    // Set tooltip
+    buildToolTip();
 }
 
 QStringList Nepomuk::SystemTray::toplevelActionNames(const QString & pluginName) const
@@ -197,4 +205,23 @@ QStringList Nepomuk::SystemTray::toplevelActionNames(const QString & pluginName)
     KConfigGroup pluginMenuGroup = KGlobal::config()->group(pluginName); 
     QStringList toplevelNames = pluginMenuGroup.readEntry("toplevel",QStringList());
     return toplevelNames;
+}
+
+void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin)
+{
+    // Get plugin index
+    int index = m_pluginsIndexes[plugin];
+    m_statusCache[index] = pluginShortStatusString(plugin);
+}
+
+void Nepomuk::SystemTray::buildToolTip()
+{
+    //kDebug() << "ToolTip: " << m_statusCache.join("\n");
+    this->setToolTipSubTitle(m_statusCache.join("\n"));
+}
+
+QString Nepomuk::SystemTray::pluginShortStatusString(SystrayPlugin * plugin )
+{
+    return plugin->shortServiceName() % ": " %
+        SystrayPlugin::shortStatusToString(plugin->shortStatus());
 }

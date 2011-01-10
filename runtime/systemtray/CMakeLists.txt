@@ -7,14 +7,14 @@ set ( NST_SOURCES
     systray.cpp
     )
 
-kde4_add_executable( nepomuk_system_tray ${NST_SOURCES} )
+kde4_add_executable( nepomukcontroller ${NST_SOURCES} )
 
-target_link_libraries(nepomuk_system_tray
+target_link_libraries(nepomukcontroller
     nepomuk_systray
     ${KDE4_KDEUI_LIBS}
     )
 
 
-install( TARGETS nepomuk_system_tray ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install( TARGETS nepomukcontroller ${INSTALL_TARGETS_DEFAULT_ARGS} )
 install(FILES nepomukcontrollerui.rc 
            DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 

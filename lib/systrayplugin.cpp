@@ -24,6 +24,7 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <KDebug>
+#include <KLocale>
 
 using namespace Nepomuk;
 
@@ -234,8 +235,8 @@ QStringList SystrayPlugin::actionSystemNames() const
 
 void SystrayPlugin::emitServiceStatusChanged()
 {
-    emit shortStatusChanged();
-    emit statusMessageChanged();
+    emit shortStatusChanged(this);
+    emit statusMessageChanged(this);
 }
 
 QString SystrayPlugin::serviceStatusMessage() const
@@ -278,3 +279,17 @@ OrgKdeNepomukServiceManagerInterface * SystrayPlugin::Private::mainServer()
     return _s;
 }
 */
+
+QString SystrayPlugin::shortStatusToString(ShortStatus status)
+{
+   switch ( status )
+   {
+       case (Running) : return i18n("Running");
+       case (Idle) : return i18n("Idle");
+       case (Suspended) : return i18n("Suspended");
+       case (NotStarted) : return i18n("Not started");
+       case (Failed) : return i18n("Failed");
+       default: return i18n("Status unknown");
+   } 
+   return QString();
+}

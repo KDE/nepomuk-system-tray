@@ -43,12 +43,14 @@ namespace Nepomuk {
 
         private Q_SLOTS:
             void slotConfigure();
-            void updateTooltip();
             void pluginInitialized(Nepomuk::SystrayPlugin*);
+            void updateToolTip(Nepomuk::SystrayPlugin*);
 
         private:
             void loadPlugins();
             void finishOurInitialization();
+            static QString pluginShortStatusString(SystrayPlugin * );
+            void buildToolTip();
             QList<QAction*> m_actions;
             QStringList toplevelActionNames(const QString & pluginName) const;
             // This counter is used to count how many plugins are performing
@@ -64,6 +66,10 @@ namespace Nepomuk {
             int m_pluginsCurrentlyInitializing;
             KXMLGUIFactory * m_factory;
             KXMLGUIBuilder * m_builder;
+            // The folowing 3 members are used to cache statuses
+            //int m_lastIndex;
+            QHash<SystrayPlugin*,int> m_pluginsIndexes;
+            QStringList m_statusCache;
 
     };
 }

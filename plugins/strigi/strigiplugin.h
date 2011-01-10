@@ -37,7 +37,6 @@ namespace Nepomuk
             virtual KActionMenu * menu() const; 
             */
             virtual ShortStatus shortStatus() const;
-            void serviceStatusChanged();
             //virtual QStringList actionSystemNames() const;
             //virtual QString serviceStatusMessage() const;
             //virtual QString serviceErrorMessage() const;
@@ -46,6 +45,7 @@ namespace Nepomuk
 
         protected Q_SLOTS:
 
+            void serviceStatusChanged();
             virtual void serviceSystemStatusChanged();
             virtual void serviceInitialized(bool);
              
