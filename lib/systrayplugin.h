@@ -24,6 +24,7 @@
 #include <KXMLGUIClient>
 #include <QString>
 #include <QStringList>
+#include <QMetaType>
 
 #include "nepomuksystray_export.h"
 class KAction;
@@ -230,6 +231,10 @@ namespace Nepomuk
              /*! \brief Return string name of ShortStatus value
               */
              static QString shortStatusToString(ShortStatus status);
+
+             /*! \brief Return wether plugin was initialized
+              */
+             bool isInitialized() const;
          public Q_SLOTS:
             /*! \brief Initialization of the plugin
              * In this method you should perform all necessary initialization procedures
@@ -342,4 +347,6 @@ namespace Nepomuk
 
     };
 }
+Q_DECLARE_METATYPE(Nepomuk::SystrayPlugin::ShortStatus)
+Q_DECLARE_METATYPE(Nepomuk::SystrayPlugin*)
 #endif

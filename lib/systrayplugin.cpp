@@ -39,6 +39,7 @@ class SystrayPlugin::Private
         OrgKdeNepomukServiceControlInterface * controlInterface;
         QDBusServiceWatcher * watcher;
         QStringList actionNamesCache;
+        bool init;
         //static OrgKdeNepomukServiceManagerInterface * mainServer();
 };
 
@@ -47,6 +48,7 @@ SystrayPlugin::SystrayPlugin(QString serviceName, QString dbusServiceName, QObje
     d(new Private())
 {
     static QString dbusBase = NSERVICE_DBUS_NAME_PREFIX".%1";
+    d->init = false;
     d->name = serviceName;
     d->shortName = serviceName;
     d->dbusServiceName = dbusServiceName;
@@ -86,8 +88,16 @@ SystrayPlugin::SystrayPlugin(QString serviceName, QString dbusServiceName, QObje
 
 void SystrayPlugin::init()
 {
-    this->doInit();
-    emit initializationFinished(this); 
+    if ( !d->init) {
+        this->doInit();
+        emit initializationFinished(this); 
+        d->init = true;
+    }
+}
+
+bool SystrayPlugin::isInitialized() const
+{
+    return d->init;
 }
 
 SystrayPlugin::~SystrayPlugin()
