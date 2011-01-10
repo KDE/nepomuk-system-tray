@@ -38,8 +38,8 @@ class StrigiSystrayPlugin::Private
     public:
         Private():srAction(0){;}
         KDualAction * srAction;
-        KActionCollection * actions;
-        KActionMenu * menu;
+        //KActionCollection * actions;
+        //KActionMenu * menu;
         OrgKdeNepomukStrigiInterface * strigiInteface;
 };
 
@@ -47,6 +47,10 @@ StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>
     SystrayPlugin(i18n("Strigi File Indexer"),"nepomukstrigiservice",parent),
     d(new Private())
 {
+    /* Init XMLGUI part */
+    setXMLFile("systraystrigipluginui.rc");
+
+    /* Init service and actions */
     this->setServiceDescription("Indexes files");
     /* Init menu */
     this->d->srAction = new KDualAction(0);
@@ -56,11 +60,14 @@ StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>
     connect( d->srAction, SIGNAL( activeChangedByUser( bool ) ),
              this, SLOT( slotSuspend( bool ) ) );
 
+    actionCollection()->addAction("suspresStrigi",d->srAction);
+    /*
     d->actions = new KActionCollection(this);
     d->menu = new KActionMenu(i18n("Strigi File Indexer"),this);
 
-    d->actions->addAction("configure", d->srAction);
+    d->actions->addAction("suspend/resume", d->srAction);
     d->menu->addAction(d->srAction);
+    */
 
 
 }
@@ -93,6 +100,7 @@ StrigiSystrayPlugin::~StrigiSystrayPlugin()
     delete d;
 }
 
+/*
 KActionCollection * StrigiSystrayPlugin::actions() const
 {
     return d->actions;
@@ -102,30 +110,21 @@ KActionMenu * StrigiSystrayPlugin::menu() const
 {
     return d->menu;
 }
+*/
 
 void StrigiSystrayPlugin::serviceStatusChanged()
 {
     this->updateActions();
     // Call parent function to emit necessary signals
-    SystrayPlugin::serviceStatusChanged();
+    SystrayPlugin::emitServiceStatusChanged();
 }
 
-void StrigiSystrayPlugin::serviceRegistered()
-{
-    this->serviceStatusChanged();
-}
-
-void StrigiSystrayPlugin::serviceUnregistered()
+void StrigiSystrayPlugin::serviceSystemStatusChanged()
 {
     this->serviceStatusChanged();
 }
 
 void StrigiSystrayPlugin::serviceInitialized(bool success)
-{
-    this->serviceStatusChanged();
-}
-
-void StrigiSystrayPlugin::serviceOwnerChanged()
 {
     this->serviceStatusChanged();
 }
@@ -226,3 +225,16 @@ void StrigiSystrayPlugin::slotSuspend(bool)
     updateActions();
     kDebug() << "Suspend is called!";
 }
+
+/*
+QStringList StrigiSystrayPlugin::actionSystemNames() const
+{
+    static QStringList answer;
+    static bool init = false;
+    if ( !init) {
+        answer << "suspend/resume";
+        init = false;
+    }
+    return answer;
+}
+*/

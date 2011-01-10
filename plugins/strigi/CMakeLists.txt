@@ -31,3 +31,5 @@ install(
   DESTINATION ${SERVICES_INSTALL_DIR}/nepomuksystray
   )
 
+install(FILES systraystrigipluginui.rc 
+           DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 

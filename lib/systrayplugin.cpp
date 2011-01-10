@@ -37,7 +37,8 @@ class SystrayPlugin::Private
         QString dbusServiceAddress;
         OrgKdeNepomukServiceControlInterface * controlInterface;
         QDBusServiceWatcher * watcher;
-        static OrgKdeNepomukServiceManagerInterface * mainServer();
+        QStringList actionNamesCache;
+        //static OrgKdeNepomukServiceManagerInterface * mainServer();
 };
 
 SystrayPlugin::SystrayPlugin(QString serviceName, QString dbusServiceName, QObject * parent):
@@ -85,7 +86,7 @@ SystrayPlugin::SystrayPlugin(QString serviceName, QString dbusServiceName, QObje
 void SystrayPlugin::init()
 {
     this->doInit();
-    emit initializationFinished(); 
+    emit initializationFinished(this); 
 }
 
 SystrayPlugin::~SystrayPlugin()
@@ -211,7 +212,27 @@ SystrayPlugin::ShortStatus SystrayPlugin::shortStatus() const
     else return Running;
 }
 
-void SystrayPlugin::serviceStatusChanged()
+#if 0
+QStringList SystrayPlugin::actionSystemNames() const
+{
+    if (d->actionNamesCache.isEmpty() ) {
+        KActionCollection * collection = this->actions();
+        if ( !collection ) {
+            kDebug() << "Plugin do not expose any actions";
+            return d->actionNamesCache;
+        }
+        if (collection->count() == 0) {
+            kDebug() << "Plugin do not expose any actions";
+            return d->actionNamesCache;
+        }
+        else {
+            // Fill cache
+        }
+    return QStringList();
+}
+#endif
+
+void SystrayPlugin::emitServiceStatusChanged()
 {
     emit shortStatusChanged();
     emit statusMessageChanged();
@@ -222,10 +243,12 @@ QString SystrayPlugin::serviceStatusMessage() const
     return QString();
 }
 
+#if 0
 QString SystrayPlugin::serviceErrorMessage() const
 {
     return QString();
 }
+#endif 
 
 QString SystrayPlugin::dbusServiceName() const
 { return d->dbusServiceName; }
@@ -248,8 +271,10 @@ void SystrayPlugin::_k_serviceOwnerChanged()
     this->serviceOwnerChanged();
 }
 
+/*
 OrgKdeNepomukServiceManagerInterface * SystrayPlugin::Private::mainServer()
 {
     static OrgKdeNepomukServiceManagerInterface * _s = new OrgKdeNepomukServiceManagerInterface(NEPOMUKSERVER_ADDRESS,NEPOMUKSERVER_SERVICEMANAGER_PATH, QDBusConnection::sessionBus(),0);
     return _s;
 }
+*/

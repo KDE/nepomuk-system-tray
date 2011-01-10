@@ -1,4 +1,6 @@
 
+add_subdirectory(kcm)
+
 ## Add program
 set ( NST_SOURCES 
     main.cpp
@@ -14,4 +16,5 @@ target_link_libraries(nepomuk_system_tray
 
 
 install( TARGETS nepomuk_system_tray ${INSTALL_TARGETS_DEFAULT_ARGS} )
- 
+install(FILES nepomukcontrollerui.rc 
+           DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 

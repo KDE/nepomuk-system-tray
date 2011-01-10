@@ -5,10 +5,13 @@ configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
 set( NSTL_SOURCES
     systrayplugin.cpp
+    systraypluginmanager.cpp
     )
 
 set ( NSTL_HEADERS
     systrayplugin.h
+    systraypluginmanager.h
+    nepomuksystray_export.h
     )
 
 qt4_add_dbus_interface(NSTL_SOURCES ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.nepomuk.ServiceManager.xml servicemanagerinterface)
@@ -21,6 +24,7 @@ target_link_libraries(nepomuk_systray
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBS}
+  ${KDE4_KDEUI_LIBS}
   )
 
 install(TARGETS nepomuk_systray ${INSTALL_TARGETS_DEFAULT_ARGS} ) 

@@ -23,15 +23,18 @@
 #include <KStatusNotifierItem>
 #include <QList>
 #include <KSharedConfig>
+#include <KXMLGUIClient>
 
 class QAction;
 class KDualAction;
 class SystrayPlugin;
+class KXMLGUIFactory;
+class KXMLGUIBuilder;
 
 namespace Nepomuk {
+    class SystrayPlugin;
 
-
-    class SystemTray : public KStatusNotifierItem
+    class SystemTray : public KStatusNotifierItem, public KXMLGUIClient
     {
         Q_OBJECT
         public:
@@ -41,14 +44,12 @@ namespace Nepomuk {
         private Q_SLOTS:
             void slotConfigure();
             void updateTooltip();
-            void pluginInitialized();
+            void pluginInitialized(Nepomuk::SystrayPlugin*);
 
         private:
             void loadPlugins();
             void finishOurInitialization();
-            KMenu * menu;
-            QList<QAction*> actions;
-            KSharedConfigPtr config;
+            QList<QAction*> m_actions;
             QStringList toplevelActionNames(const QString & pluginName) const;
             // This counter is used to count how many plugins are performing
             // initialization in the moment. Each time init() is called,
@@ -60,7 +61,10 @@ namespace Nepomuk {
             // When it's value reachs 0 this means that all plugins are now
             // initialized.
             // So we can finish overall initialization
-            int pluginsCurrentlyInitializing;
+            int m_pluginsCurrentlyInitializing;
+            KXMLGUIFactory * m_factory;
+            KXMLGUIBuilder * m_builder;
+
     };
 }
 

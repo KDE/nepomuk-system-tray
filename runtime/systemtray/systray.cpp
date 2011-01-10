@@ -18,6 +18,7 @@
  */
  
 #include "systrayplugin.h"
+#include "systraypluginmanager.h"
 #include "systray.h"
 
 #include <KApplication>
@@ -29,9 +30,8 @@
 #include <KIcon>
 #include <KToolInvocation>
 #include <KActionCollection>
-#include <KPluginFactory>
-#include <KService>
-#include <KServiceTypeTrader>
+#include <KXMLGUIFactory>
+#include <KXMLGUIBuilder>
 #include <KConfigGroup>
 #include <KDebug>
 #include <QAction>
@@ -46,27 +46,47 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     setStatus( Passive );
     setIconByName( "nepomuk" );
     setTitle( i18n( "Nepomuk Services" ) );
-    setStandardActionsEnabled( true );
+    //setStandardActionsEnabled( true );
+    
+    /* Init XMLGUI part */
+    QString xmlfile = KGlobal::mainComponent().componentName() + "ui.rc";
+    setXMLFile(xmlfile);
 
-    this->config = KGlobal::config();
+    // Passing 0 leads to some strange segfaults.
+    // So pass new QWidget() instead
+    m_builder = new KXMLGUIBuilder(new QWidget());
+    m_factory = new KXMLGUIFactory(m_builder,this);
 
-    this->menu = new KMenu();
-    menu->addTitle( i18n( "Search Service" ) );
+    /* Add some basic actions */
+    KAction* configAction = new KAction( this );
+    configAction->setText( i18n( "Configure System tray" ) );
+    configAction->setIcon( KIcon( "configure" ) );
+    connect( configAction, SIGNAL( triggered() ),
+             this, SLOT( slotConfigure() ) );
+    KXMLGUIClient::actionCollection()->addAction("configNepomuk",configAction);
 
+    KStandardAction::quit(kapp, SLOT(quit()), KXMLGUIClient::actionCollection());
+
+    // Adding client
+    m_factory->addClient(this);
+
+    // Loading plugins
     loadPlugins();
 
 
-    setContextMenu( menu );
+    //setContextMenu( menu );
 
 
-    KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
 
 }
 
 
 Nepomuk::SystemTray::~SystemTray()
 {
-    delete this->menu;
+    //delete this->menu;
+
+    delete m_factory;
+    delete m_builder;
 }
 
 
@@ -87,116 +107,94 @@ void Nepomuk::SystemTray::updateTooltip()
 
 void Nepomuk::SystemTray::loadPlugins()
 {
-    this->pluginsCurrentlyInitializing = 0;
-    KService::List offers = KServiceTypeTrader::self()->query("NepomukSystray/Plugin");
- 
-    KService::List::const_iterator iter;
-    for(iter = offers.begin(); iter < offers.end(); ++iter)
+    m_pluginsCurrentlyInitializing = 0;
+    foreach(SystrayPlugin* plugin, SystrayPluginManager::self()->plugins())
     {
-       QString error;
-       KService::Ptr service = *iter;
- 
-        KPluginFactory *factory = KPluginLoader(service->library()).factory();
- 
-        if (!factory)
-        {
-            kError(5001) << "KPluginFactory could not load the plugin:" << service->library();
-            continue;
-        }
- 
-        Nepomuk::SystrayPlugin *plugin = factory->create<Nepomuk::SystrayPlugin>(this);
- 
-       if (plugin) {
-           kDebug() << "Load plugin:" << service->name(); 
+        Q_CHECK_PTR(plugin);
 
-           QString systemname = service->property("X-KDE-PluginInfo-Name",QVariant::String).toString();
-           plugin->setObjectName(systemname);
-
-           connect(plugin,SIGNAL(initializationFinished()),
-                   this,SLOT(pluginInitialized())
-                  );
-           this->pluginsCurrentlyInitializing += 1;
-           QMetaObject::invokeMethod(plugin,"init",Qt::QueuedConnection);
-
-       } else {
-           kDebug() << error;
-       }
+       connect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
+               this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
+              );
+       m_pluginsCurrentlyInitializing += 1;
+       QMetaObject::invokeMethod(plugin,"init",Qt::QueuedConnection);
     }
 }
 
-void Nepomuk::SystemTray::pluginInitialized()
+void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
 {
-    // Get plugin instance
-    Nepomuk::SystrayPlugin * plugin  = qobject_cast<Nepomuk::SystrayPlugin*>(sender());
-    if (plugin) {
-        kDebug() << "Plugin: " << plugin->objectName() << " finish initialization";
-        Q_ASSERT(pluginsCurrentlyInitializing > 0);
-        this->pluginsCurrentlyInitializing -= 1;
-        kDebug() << "plugins uninitialized left: " << pluginsCurrentlyInitializing;
-        // To prevent situations when user will send second pluginIntialized signal
-        // Unfortunately this works only if plugin is in the same thread as SystemTray
-        disconnect(plugin,SIGNAL(initializationFinished()),
-                   this,SLOT(pluginInitialized())
-                  );
+    kDebug() << "Plugin: " << plugin->objectName() << " finish initialization";
+    Q_ASSERT(m_pluginsCurrentlyInitializing > 0);
+    this->m_pluginsCurrentlyInitializing -= 1;
+    kDebug() << "plugins uninitialized left: " << m_pluginsCurrentlyInitializing;
+    // To prevent situations when user will send second pluginIntialized signal
+    // Unfortunately this works only if plugin is in the same thread as SystemTray
+    disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
+               this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
+              );
 
-       // Get it actions
-       KActionCollection * coll = plugin->actions();
-       if ( !coll ) {
-           kDebug() << "No actions are exposed";
-           return;
-       }
-       QStringList toplevelItems = toplevelActionNames(plugin->objectName());
-       // Add top level actions to the menu directly
-       foreach ( const QString & iname, toplevelItems)
-       {
-           QAction * act = coll->action(iname);
-           if (!act)
-               continue;
-           this->menu->addAction(act);
-       }
-       // Get menu
-       KActionMenu * m = plugin->menu();
-       if (!m) {
-           kDebug() << "No menu is provided";
-           return;
-       }
-       kDebug() << "Actions exposed in menu: " << m->menu()->actions().size(); 
-       // Add submenu to the special list.
-       // This is necessary to prevent mixing submenus and top-level itmes
-       // cause Qt doesn't support adding actions to the arbitrary
-       // plases in the menu
-       this->actions.append(m);
-
-       if ( pluginsCurrentlyInitializing == 0)
-           finishOurInitialization();
-    }
-    else {
-        kError(5001) << "Recieve signal not from plugin";
-    }
+    // Add it to the factory
+    m_factory->addClient(plugin);
+#if 0
+   // Get it actions
+   KActionCollection * coll = plugin->actions();
+   if ( !coll ) {
+       kDebug() << "No actions are exposed";
+       return;
+   }
+   QStringList toplevelItems = toplevelActionNames(plugin->objectName());
+   // Add top level actions to the menu directly
+   foreach ( const QString & iname, toplevelItems)
+   {
+       QAction * act = coll->action(iname);
+       if (!act)
+           continue;
+       this->contextMenu()->addAction(act);
+   }
+   // Get menu
+   KActionMenu * m = plugin->menu();
+   if (!m) {
+       kDebug() << "No menu is provided";
+       return;
+   }
+   kDebug() << "Actions exposed in menu: " << m->menu()->actions().size(); 
+   // Add submenu to the special list.
+   // This is necessary to prevent mixing submenus and top-level itmes
+   // cause Qt doesn't support adding actions to the arbitrary
+   // plases in the menu
+   m_actions.append(m);
+#endif
+   if ( m_pluginsCurrentlyInitializing == 0)
+       finishOurInitialization();
 }
 
 void Nepomuk::SystemTray::finishOurInitialization()
 {
     kDebug() << "Finishing our initialization";
     // Adding all submenus
+    /*
     foreach( QAction * m, this->actions)
     {
        this->menu->addAction(m);
     }
     this->actions.clear();
+    */
 
-    // Load last action - configure systray itself
-    KAction* configAction = new KAction( menu );
-    configAction->setText( i18n( "Configure System tray" ) );
-    configAction->setIcon( KIcon( "configure" ) );
-    connect( configAction, SIGNAL( triggered() ),
-             this, SLOT( slotConfigure() ) );
-    menu->addAction( configAction );
+    QWidget * w = m_factory->container("trayMenu",this);
+    KMenu * trayMenu = qobject_cast<KMenu*>(w);
+    if (!trayMenu) {
+        kError() << "Failed to retrieve menu";
+        return;
+    }
+    //menu->addAction( configAction );
+    setContextMenu(trayMenu);
+
+
+    setAssociatedWidget( contextMenu() );
 }
 
 QStringList Nepomuk::SystemTray::toplevelActionNames(const QString & pluginName) const
 {
-    KConfigGroup pluginMenuGroup = config->group(pluginName); 
+    KConfigGroup pluginMenuGroup = KGlobal::config()->group(pluginName); 
     QStringList toplevelNames = pluginMenuGroup.readEntry("toplevel",QStringList());
     return toplevelNames;
 }

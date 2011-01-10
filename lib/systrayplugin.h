@@ -21,15 +21,38 @@
 #define _NEPOMUK_SYSTRAY_PLUGIN
 #include <kdemacros.h>
 #include <QtCore/QObject>
+#include <KXMLGUIClient>
 #include <QString>
+#include <QStringList>
 
+#include "nepomuksystray_export.h"
 class KAction;
 class KActionCollection;
 class KActionMenu;
 
 namespace Nepomuk
 {
-    class KDE_EXPORT SystrayPlugin : public QObject
+    /*! \brief This class is a base for plugins for Nepomuk System tray
+     * Methods that you must implement:
+     *  - serviceInitialized - this slot is called when service report it's initialization
+     *    status
+     *  - serviceSystemStatusChanged - this slot is called by default implementations of
+     *    \fn serviceRegistred and some other. Although you can reimplement these methods
+     *    you still have to implement serviceSystemStatusChanged, even if it wouldn't do
+     *    anything. This is done just to prevent logic erros.
+     *  - doInit. In this method you should do all D-Bus related initialization.
+     * Methods you should implement:
+     *  - shortStatus. Report short status of the service. Default can distinguish between
+     *    limited states
+     *  - statusMessage. Return text describing status of the service. Default 
+     *    implementation return empty string.
+     * Signals you should emit:
+     *  - shortStatusChanged - emit when short status is changed
+     *  - statusMessageChanged - emit when status message is changed. 
+     * <b> NEVER EMIT initializationFinished </b>
+     *
+     */
+    class NEPOMUKSYSTRAY_EXPORT SystrayPlugin : public QObject, public KXMLGUIClient
     {
         Q_OBJECT;
         public:
@@ -37,7 +60,7 @@ namespace Nepomuk
              * In this method you should perform all initialization that doesn't require
              * a lot of time. You shouldn't try to communicate with DBus services here
              * cause they may be hung and it would take a lot of time for QDBus to detect
-             *  and return an error. Use init() method for that.
+             * and return an error. Use init() method for that.
              * \param serviceName Human-readable name of the service. Please don't use 
              * long names - this name will appear in menu
              * \param dbusServiceName Every service has the 'system' name. This is the
@@ -72,6 +95,7 @@ namespace Nepomuk
              */
             QString serviceDescription() const;
 
+#if 0
             /*! \brief Whether the service is user-oriented
              * Return true if you service is what user probably want to see in quick 
              * access. If the return value is false, then widgets that displays service
@@ -86,7 +110,11 @@ namespace Nepomuk
              */
             virtual bool userVisible() const { return actions() != 0; }
 
-            /*! \brief This method returns all actions that this contol module expose. 
+            /*! \brief This method returns all actions that this contol module expose in given enviroment
+             * In given enviroment means that you can adjust list of the exposed actions
+             * according to some external circumstances( such as API version and so on )
+             * But you should guarantee that actions with same meaning will always have
+             * the same key in collection.
              * You can return 0 ( this is the default value ) and this means that you
              * have no actions to expose.
              * Please be aware that if 0 is returned, then result of the \fn menu() 
@@ -96,9 +124,27 @@ namespace Nepomuk
              * not be exposed, you may exclude them from this collection.
              * Returning empty collection will be interpreted in the right way and 
              * \fn menu() will still be checked.
+             * This method will be called only after doInit()
              * \sa menu() 
              */
             virtual KActionCollection * actions() const { return 0;}
+
+            /*! \brief This method return names of all possible exposed actions in all possible enviroments
+             * The purpose of this function is to be used when configuring what actions
+             * should go into the top level and so on. Cause there is no need in KAction
+             * objects you don't need to return KActionCollection and you should return 
+             * QStringList instead.
+             * Default implementation can't do anything because KActionCollections is 
+             * a very stange structure
+             * This method can be called at any time and it should not depend from any
+             * initialization function ( except constructor )
+             */
+#if 0
+             * Default implementation will take all names from actions() result, so if 
+             * you are exposing some actions only in case some conditions are met, you 
+             * should overload this method
+#endif
+            virtual QStringList actionSystemNames() const;
 
             /*! \brief Return menu for this plugin.
              * This method is used to allow plugin return a menu that will be 
@@ -112,6 +158,7 @@ namespace Nepomuk
              * Default implementation return 0 .
              */
             virtual KActionMenu * menu() const { return 0; } 
+#endif
 
             /*! \brief This is the predefined set of constants that describes the state of the service.
              * Of course, you service can have more states, e.g. "No space left on the device" or "I am in pain!". You can use
@@ -157,13 +204,16 @@ namespace Nepomuk
 
              /*! \brief Return the arbitrary service status description
               * This is the method where you can use all status messages you wan't to use.
-              * But be aware that if shortStatus if the service is NotStarted or Failed the
+              * But be aware that if shortStatus if the service is NotStarted 
               * status string wouldn't be shown.
               * If service doesn't have status message, return null or empty QString
+              * If service has an error and you don't have a message for this error,
+              * you should return null or empty string.
               * Default implemntation will return Null string.
-              * \sa shortStatus(), serviceErrorMessage()
+              * \sa shortStatus()
               */
              virtual QString serviceStatusMessage() const;
+
 
              /*! \brief Return the service error message
               * This method will be called only if you short status is Failed or NotStarted
@@ -173,7 +223,7 @@ namespace Nepomuk
               * Default implemntation will return Null string.
               * \sa serviceStatusMessage(), shortStatus()
               */
-             virtual QString serviceErrorMessage() const ;
+             //virtual QString serviceErrorMessage() const ;
 
              virtual ~SystrayPlugin();
          public Q_SLOTS:
@@ -199,29 +249,49 @@ namespace Nepomuk
               * It is automatically emited when plugin finish initialization.
               * <b> NEVER SEND IT MANUALLY </b>
               */
-             void initializationFinished();
+             void initializationFinished(Nepomuk::SystrayPlugin *);
          protected Q_SLOTS:
-             /*! \brief This slot is called when D-Bus enpoind appears
-              */
-             virtual void serviceRegistered() = 0;
-             
-             /*! \brief This slot is called when D-Bus endpoint disappear
-              */
-             virtual void serviceUnregistered() = 0; 
-
              /*! \brief This slot is called when service is initialized
+              * Default implementation will call serviceSystemStatusChanged()
+              * You may wish to implement it
               */
              virtual void serviceInitialized(bool) = 0;
 
-             /*! \brief This function is called when owher of the service has changed
+             /*! \brief This slot is called when D-Bus enpoind appears
+              * Default implementation will call serviceSystemStatusChanged()
+              * You may wish to implement it
               */
-             virtual void serviceOwnerChanged() = 0;
+             virtual void serviceRegistered()
+             { this->serviceSystemStatusChanged(); }
+             
+             /*! \brief This slot is called when D-Bus endpoint disappear
+              * Default implementation will call serviceSystemStatusChanged()
+              * You may wish to implement it
+              */
+             virtual void serviceUnregistered() 
+             { this->serviceSystemStatusChanged(); }
 
+             /*! \brief This function is called when owher of the service has changed
+              * Default implementation will call serviceSystemStatusChanged()
+              * You may wish to implement it
+              */
+             virtual void serviceOwnerChanged()
+             { this->serviceSystemStatusChanged(); }
+
+             /*! \brief Special method that is called by default when D-Bus status of the service is changed
+              * This method is called by \fn serviceRegistered , \fn serviceUnregistered
+              * \fn serviceOwnerChanged 
+              * when service is registred, unregistred and so on.
+              * You can implement this method or reimplement the above methods.
+              */
+             virtual void serviceSystemStatusChanged() = 0;
+             
              /*! \brief This is convinience slot to emit all necessary signals when state of the service is cnanged
               * It will emit shortStatusChanged(), statusMessageChanged() and some others.
               * Use it when, for example, service is registered or unregistered and so on
               */
-             void serviceStatusChanged();
+             void emitServiceStatusChanged();
+
          protected:
              /*! \brief Use this method to set the description of the service
               */
@@ -260,6 +330,7 @@ namespace Nepomuk
             void _k_serviceRegistered();
             void _k_serviceUnregistered();
             void _k_serviceOwnerChanged();
+
         private:
              //void updateControlInterface();
              class Private;
