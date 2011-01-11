@@ -17,12 +17,15 @@
    Boston, MA 02110-1301, USA.
  */
  
-#ifndef _NEPOMUK_SYSTRAY_STRIGI_PLUGIN
-#define _NEPOMUK_SYSTRAY_STRIGI_PLUGIN
-#include <kdemacros.h>
-#include <QtCore/QObject>
+#ifndef NEPOMUK_SYSTRAY_STRIGI_PLUGIN
+#define NEPOMUK_SYSTRAY_STRIGI_PLUGIN
 
 #include "systrayplugin.h"
+
+#include <kdemacros.h>
+
+#include <QtCore/QObject>
+
 
 namespace Nepomuk
 {

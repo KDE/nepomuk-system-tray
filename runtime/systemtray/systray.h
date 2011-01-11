@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _NEPOMUK_SERVICE_SYSTRAY_H_
-#define _NEPOMUK_SERVICE_SYSTRAY_H_
+#ifndef NEPOMUK_SERVICE_SYSTRAY_H_
+#define NEPOMUK_SERVICE_SYSTRAY_H_
 
 #include <KStatusNotifierItem>
 #include <QList>
@@ -66,7 +66,7 @@ namespace Nepomuk {
             int m_pluginsCurrentlyInitializing;
             KXMLGUIFactory * m_factory;
             KXMLGUIBuilder * m_builder;
-            // The folowing 3 members are used to cache statuses
+            // The following 3 members are used to cache statuses
             //int m_lastIndex;
             QHash<SystrayPlugin*,int> m_pluginsIndexes;
             QStringList m_statusCache;

@@ -17,9 +17,9 @@
    Boston, MA 02110-1301, USA.
  */
  
+#include "systray.h"
 #include "systrayplugin.h"
 #include "systraypluginmanager.h"
-#include "systray.h"
 
 #include <KApplication>
 #include <KGlobal>
@@ -34,9 +34,9 @@
 #include <KXMLGUIBuilder>
 #include <KConfigGroup>
 #include <KDebug>
-#include <QAction>
-#include <QStringBuilder>
-#include <QtDebug>
+#include <QtGui/QAction>
+#include <QtCore/QStringBuilder>
+#include <QtCore/QtDebug>
 
 
 
@@ -212,6 +212,9 @@ void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin)
     // Get plugin index
     int index = m_pluginsIndexes[plugin];
     m_statusCache[index] = pluginShortStatusString(plugin);
+
+    // Refresh tooltip
+    buildToolTip();
 }
 
 void Nepomuk::SystemTray::buildToolTip()

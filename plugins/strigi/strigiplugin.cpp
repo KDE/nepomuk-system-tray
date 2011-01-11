@@ -76,7 +76,7 @@ StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>
 void StrigiSystrayPlugin::doInit()
 {
     d->strigiInteface = new OrgKdeNepomukStrigiInterface(dbusServiceAddress(), 
-            "/" + dbusServiceName(),
+            '/' + dbusServiceName(),
             QDBusConnection::sessionBus(),
             this);
 

@@ -15,14 +15,14 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
  */
+#include "systraypluginmanager.h"
+#include "systrayplugin.h"
  
 #include <KPluginFactory>
 #include <KService>
 #include <KServiceTypeTrader>
 #include <KDebug>
 
-#include "systraypluginmanager.h"
-#include "systrayplugin.h"
 
 using namespace Nepomuk;
 

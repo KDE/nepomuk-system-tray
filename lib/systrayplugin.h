@@ -17,14 +17,15 @@
  */
  
 
-#ifndef _NEPOMUK_SYSTRAY_PLUGIN
-#define _NEPOMUK_SYSTRAY_PLUGIN
-#include <kdemacros.h>
+#ifndef NEPOMUK_SYSTRAY_PLUGIN
+#define NEPOMUK_SYSTRAY_PLUGIN
+
 #include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QMetaType>
+
 #include <KXMLGUIClient>
-#include <QString>
-#include <QStringList>
-#include <QMetaType>
 
 #include "nepomuksystray_export.h"
 class KAction;

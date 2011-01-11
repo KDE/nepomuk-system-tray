@@ -16,6 +16,9 @@
    Boston, MA 02110-1301, USA.
  */
  
+#ifndef NEPOUMKSYSTRAY_SERVER_CLIENT_H_
+#define NEPOUMKSYSTRAY_SERVER_CLIENT_H_
+
 #include "config.h"
 
 namespace Nepomuk {
@@ -28,13 +31,16 @@ namespace Nepomuk {
     {
         Q_OBJECT;
         pubic:
-            /*! \brief Return true if server has ben registred and interfaces was successfuly created
+            /*! \brief Return true if server has ben registered and interfaces was successfuly created
              */
             bool isConnected() const;
             OrgKdeNepomukServiceControlInterface * serviceContronInterface() const;
             static ServerClient * self();
         Q_SIGNALS:
-            void serverRegistred();
-            void serverUnregistred();
+            void serverRegistered();
+            void serverUnregistered();
             void serverOwnerChanged();
-    }
+    };
+}
+
+#endif
