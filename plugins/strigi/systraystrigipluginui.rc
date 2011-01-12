@@ -9,5 +9,8 @@
     <Menu name="trayMenu" >
       <Action name="suspresStrigi" />
     </Menu>
+    <Menu name="nepomukstrigiservice_actions">
+      <Action name="suspresStrigi" />
+    </Menu>
 </gui>
 

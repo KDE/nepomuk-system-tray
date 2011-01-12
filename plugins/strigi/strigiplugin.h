@@ -43,6 +43,7 @@ namespace Nepomuk
             //virtual QStringList actionSystemNames() const;
             //virtual QString serviceStatusMessage() const;
             //virtual QString serviceErrorMessage() const;
+            virtual bool userOriented() const { return true; }
         protected:
             virtual void doInit();
 

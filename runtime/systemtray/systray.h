@@ -33,6 +33,7 @@ class KXMLGUIBuilder;
 
 namespace Nepomuk {
     class SystrayPlugin;
+    class MainWidget;
 
     class SystemTray : public KStatusNotifierItem, public KXMLGUIClient
     {
@@ -51,8 +52,6 @@ namespace Nepomuk {
             void finishOurInitialization();
             static QString pluginShortStatusString(SystrayPlugin * );
             void buildToolTip();
-            QList<QAction*> m_actions;
-            QStringList toplevelActionNames(const QString & pluginName) const;
             // This counter is used to count how many plugins are performing
             // initialization in the moment. Each time init() is called,
             // it's value is increased by one.
@@ -70,6 +69,7 @@ namespace Nepomuk {
             //int m_lastIndex;
             QHash<SystrayPlugin*,int> m_pluginsIndexes;
             QStringList m_statusCache;
+            MainWidget * m_mainWidget;
 
     };
 }

@@ -5,6 +5,13 @@ add_subdirectory(kcm)
 set ( NST_SOURCES 
     main.cpp
     systray.cpp
+    mainwidget.cpp
+    servicewidget.cpp
+    )
+
+kde4_add_ui_files( NST_SOURCES 
+    mainWidget.ui
+    serviceWidget.ui
     )
 
 kde4_add_executable( nepomukcontroller ${NST_SOURCES} )

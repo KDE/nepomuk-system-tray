@@ -20,6 +20,7 @@
 #include "systray.h"
 #include "systrayplugin.h"
 #include "systraypluginmanager.h"
+#include "mainwidget.h"
 
 #include <KApplication>
 #include <KGlobal>
@@ -80,7 +81,10 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     setToolTipTitle(i18n("Nepomuk"));
 
 
+    // Create associated window
+    m_mainWidget = new MainWidget(m_factory);
 
+    setAssociatedWidget( m_mainWidget );
 }
 
 
@@ -141,35 +145,10 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
         m_statusCache.append(
                 pluginShortStatusString(plugin)
                 );
-#if 0
-   // Get it actions
-   KActionCollection * coll = plugin->actions();
-   if ( !coll ) {
-       kDebug() << "No actions are exposed";
-       return;
-   }
-   QStringList toplevelItems = toplevelActionNames(plugin->objectName());
-   // Add top level actions to the menu directly
-   foreach ( const QString & iname, toplevelItems)
-   {
-       QAction * act = coll->action(iname);
-       if (!act)
-           continue;
-       this->contextMenu()->addAction(act);
-   }
-   // Get menu
-   KActionMenu * m = plugin->menu();
-   if (!m) {
-       kDebug() << "No menu is provided";
-       return;
-   }
-   kDebug() << "Actions exposed in menu: " << m->menu()->actions().size(); 
-   // Add submenu to the special list.
-   // This is necessary to prevent mixing submenus and top-level itmes
-   // cause Qt doesn't support adding actions to the arbitrary
-   // plases in the menu
-   m_actions.append(m);
-#endif
+
+   // Add it to the main widget
+   m_mainWidget->addPlugin(plugin);
+
    if ( m_pluginsCurrentlyInitializing == 0)
        finishOurInitialization();
 }
@@ -194,17 +173,10 @@ void Nepomuk::SystemTray::finishOurInitialization()
     }
     //menu->addAction( configAction );
     setContextMenu(trayMenu);
-    setAssociatedWidget( contextMenu() );
 
     // Set tooltip
     buildToolTip();
-}
 
-QStringList Nepomuk::SystemTray::toplevelActionNames(const QString & pluginName) const
-{
-    KConfigGroup pluginMenuGroup = KGlobal::config()->group(pluginName); 
-    QStringList toplevelNames = pluginMenuGroup.readEntry("toplevel",QStringList());
-    return toplevelNames;
 }
 
 void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin)

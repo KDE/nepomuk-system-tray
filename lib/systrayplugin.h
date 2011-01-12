@@ -97,7 +97,6 @@ namespace Nepomuk
              */
             QString serviceDescription() const;
 
-#if 0
             /*! \brief Whether the service is user-oriented
              * Return true if you service is what user probably want to see in quick 
              * access. If the return value is false, then widgets that displays service
@@ -107,60 +106,9 @@ namespace Nepomuk
              * queryservice - <i>false</i>
              * As the rule of the thumb - if you don't allow user to control the service,
              * then you should return false
-             * \note Default implementation will check that suspendResumeAction() is not
-             * null
+             * \note Default implementation return false 
              */
-            virtual bool userVisible() const { return actions() != 0; }
-
-            /*! \brief This method returns all actions that this contol module expose in given enviroment
-             * In given enviroment means that you can adjust list of the exposed actions
-             * according to some external circumstances( such as API version and so on )
-             * But you should guarantee that actions with same meaning will always have
-             * the same key in collection.
-             * You can return 0 ( this is the default value ) and this means that you
-             * have no actions to expose.
-             * Please be aware that if 0 is returned, then result of the \fn menu() 
-             * call will be considered 0 too.
-             * This action collection is used to allow user select items to be used
-             * in top-level menu. So, if you have a rear case when some actions can
-             * not be exposed, you may exclude them from this collection.
-             * Returning empty collection will be interpreted in the right way and 
-             * \fn menu() will still be checked.
-             * This method will be called only after doInit()
-             * \sa menu() 
-             */
-            virtual KActionCollection * actions() const { return 0;}
-
-            /*! \brief This method return names of all possible exposed actions in all possible enviroments
-             * The purpose of this function is to be used when configuring what actions
-             * should go into the top level and so on. Cause there is no need in KAction
-             * objects you don't need to return KActionCollection and you should return 
-             * QStringList instead.
-             * Default implementation can't do anything because KActionCollections is 
-             * a very stange structure
-             * This method can be called at any time and it should not depend from any
-             * initialization function ( except constructor )
-             */
-#if 0
-             * Default implementation will take all names from actions() result, so if 
-             * you are exposing some actions only in case some conditions are met, you 
-             * should overload this method
-#endif
-            virtual QStringList actionSystemNames() const;
-
-            /*! \brief Return menu for this plugin.
-             * This method is used to allow plugin return a menu that will be 
-             * used as submenu in the main one.
-             * The \fn actions() is not enough because KActionCollection doesn't 
-             * allow organizing into submenus.
-             * If 0 is returned, then the value of actions() will be considered.
-             * If it is non-0, then menu will be build automatically.
-             * If it is 0, then this will mean that plugin has no action and menus
-             * to expose to the user
-             * Default implementation return 0 .
-             */
-            virtual KActionMenu * menu() const { return 0; } 
-#endif
+            virtual bool userOriented() const { return false; }
 
             /*! \brief This is the predefined set of constants that describes the state of the service.
              * Of course, you service can have more states, e.g. "No space left on the device" or "I am in pain!". You can use
@@ -236,6 +184,16 @@ namespace Nepomuk
              /*! \brief Return wether plugin was initialized
               */
              bool isInitialized() const;
+
+             /*! \brief Return the 'system' name of the service
+              * It is simply the parameter that you pass to constructor
+              */
+             QString dbusServiceName() const;
+
+             /*! \brief Return the D-Bus address of the service
+              */
+             QString dbusServiceAddress() const;
+
          public Q_SLOTS:
             /*! \brief Initialization of the plugin
              * In this method you should perform all necessary initialization procedures
@@ -321,15 +279,6 @@ namespace Nepomuk
              /*! \brief Checks that necessary DBus endpoint for service exists.
               */
              bool isServiceRegistered() const;
-
-             /*! \brief Return the 'system' name of the service
-              * It is simply the parameter that you pass to constructor
-              */
-             QString dbusServiceName() const;
-
-             /*! \brief Return the D-Bus address of the service
-              */
-             QString dbusServiceAddress() const;
 
              /*! \brief Function where real time-consuming initialization happens
               * You can do whatever you need here, but

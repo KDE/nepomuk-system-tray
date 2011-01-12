@@ -90,8 +90,8 @@ void SystrayPlugin::init()
 {
     if ( !d->init) {
         this->doInit();
-        emit initializationFinished(this); 
         d->init = true;
+        emit initializationFinished(this); 
     }
 }
 
