@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __NEPOMUK_SYSTRAY_EXPORT_H_
-#define __NEPOMUK_SYSTRAY_EXPORT_H_ 
+#ifndef NEPOMUK_SYSTRAY_EXPORT_H
+#define NEPOMUK_SYSTRAY_EXPORT_H
 
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>

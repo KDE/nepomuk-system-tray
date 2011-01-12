@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef NEPOMUK_SERVICE_SYSTRAY_H_
-#define NEPOMUK_SERVICE_SYSTRAY_H_
+#ifndef NEPOMUK_SERVICE_SYSTRAY_H
+#define NEPOMUK_SERVICE_SYSTRAY_H
 
 #include <KStatusNotifierItem>
 #include <QList>

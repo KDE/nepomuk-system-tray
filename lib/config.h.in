@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
  */
 
-#ifndef __NEPOMUK_SYSTRAY_CONFIG_H_
-#define __NEPOMUK_SYSTRAY_CONFIG_H_
+#ifndef NEPOMUK_SYSTRAY_CONFIG_H
+#define NEPOMUK_SYSTRAY_CONFIG_H
 
 #define NSERVICE_DBUS_NAME_PREFIX "org.kde.nepomuk.services"
 

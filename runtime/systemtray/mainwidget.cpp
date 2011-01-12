@@ -20,7 +20,6 @@
 #include "systrayplugin.h"
 
 #include <QtGui/QWidget>
-#include <QtGui/QWidget>
 #include <QtGui/QSizePolicy>
 #include <KDebug>
 

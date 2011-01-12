@@ -223,25 +223,6 @@ SystrayPlugin::ShortStatus SystrayPlugin::shortStatus() const
     else return Running;
 }
 
-#if 0
-QStringList SystrayPlugin::actionSystemNames() const
-{
-    if (d->actionNamesCache.isEmpty() ) {
-        KActionCollection * collection = this->actions();
-        if ( !collection ) {
-            kDebug() << "Plugin do not expose any actions";
-            return d->actionNamesCache;
-        }
-        if (collection->count() == 0) {
-            kDebug() << "Plugin do not expose any actions";
-            return d->actionNamesCache;
-        }
-        else {
-            // Fill cache
-        }
-    return QStringList();
-}
-#endif
 
 void SystrayPlugin::emitServiceStatusChanged()
 {
@@ -253,13 +234,6 @@ QString SystrayPlugin::serviceStatusMessage() const
 {
     return QString();
 }
-
-#if 0
-QString SystrayPlugin::serviceErrorMessage() const
-{
-    return QString();
-}
-#endif 
 
 QString SystrayPlugin::dbusServiceName() const
 { return d->dbusServiceName; }
@@ -294,12 +268,12 @@ QString SystrayPlugin::shortStatusToString(ShortStatus status)
 {
    switch ( status )
    {
-       case (Running) : return i18n("Running");
-       case (Idle) : return i18n("Idle");
-       case (Suspended) : return i18n("Suspended");
-       case (NotStarted) : return i18n("Not started");
-       case (Failed) : return i18n("Failed");
-       default: return i18n("Status unknown");
+       case (Running) : return i18nc("@info:status Running","Running");
+       case (Idle) : return i18nc("@info:status Idle", "Idle");
+       case (Suspended) : return i18nc("@info:status Suspended", "Suspended");
+       case (NotStarted) : return i18nc("@info:status Not started", "Not started");
+       case (Failed) : return i18nc("@info:status Failed", "Failed");
+       default: return i18nc("@info:status Status unknown", "Unknown");
    } 
    return QString();
 }
