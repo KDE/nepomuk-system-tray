@@ -1,9 +1,9 @@
 [Desktop Entry]
- Type=Service
- X-KDE-ServiceTypes=NepomukSystray/Plugin
- X-KDE-Library=nepomuksystray_strigi
- X-KDE-PluginInfo-Name=strigi_basic
- Name=Strigi system tray plugin
- Comment=Plugin for nepomuk system tray that contols strigi service
+Type=Service
+X-KDE-ServiceTypes=NepomukSystray/Plugin
+X-KDE-Library=nepomuksystray_strigi
+X-KDE-PluginInfo-Name=strigi_basic
+Name=Strigi system tray plugin
+Comment=Plugin for the Nepomuk system tray that controls the Strigi service
 
 
