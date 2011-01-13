@@ -1,6 +1,7 @@
 /*
    This file is part of the Nepomuk KDE project.
    Copyright (C) 2011 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2011 Serebriyskiy Artem <v.for.vandal@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -30,10 +31,10 @@ int main( int argc, char *argv[] )
     KAboutData aboutData( "nepomukcontroller",
                           "nepomukcontroller",
                           ki18n("Nepomuk Controller"),
-                          "0.2",
-                          ki18n("A small tool to monitor and control Nepomuk file indexing"),
+                          "0.3",
+                          ki18n("A small tool to monitor and control Nepomuk services"),
                           KAboutData::License_GPL,
-                          ki18n("(c) 2008-2011, Sebastian Trüg"),
+                          ki18n("(c) 2008-2011, Sebastian Trüg, Serebriyskiy Artem"),
                           KLocalizedString(),
                           "http://nepomuk.kde.org" );
     aboutData.addAuthor(ki18n("Sebastian Trüg"),ki18n("Maintainer"), "trueg@kde.org");
