@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=NepomukSystray/Plugin
+X-KDE-Library=nepomuksystray_@_dbusname@
+X-KDE-PluginInfo-Name=@_pluginsystemname@
+Name=@_pluginsystemname@ system tray plugin
+
+

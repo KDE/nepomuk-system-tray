@@ -1,0 +1,81 @@
+/* This file is part of the KDE Project
+   Copyright (c) 2008-2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2010-2011 Serebriyskiy Artem <v.for.vandal@gmail.com>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+ */
+ 
+
+#include "@_dbusname@plugin.h"
+
+#include <KPluginFactory>
+#include <KGuiItem>
+#include <KLocale>
+#include <KDebug>
+#include <KDualAction>
+#include <KActionMenu>
+#include <KActionCollection>
+using namespace Nepomuk;
+
+K_PLUGIN_FACTORY(@_dbusname@SystrayPluginFactory, registerPlugin< Nepomuk::@_dbusname@SystrayPlugin >();)
+K_EXPORT_PLUGIN(@_dbusname@SystrayPluginFactory("systray@_dbusname@plugin"))
+
+class @_dbusname@SystrayPlugin::Private
+{
+};
+
+@_dbusname@SystrayPlugin::@_dbusname@SystrayPlugin( QObject * parent,const QList<QVariant>&):
+    SystrayPlugin(i18n("@_servicename@"),"@_dbusname@",parent),
+    d(new Private())
+{
+    /* Init XMLGUI part */
+    setXMLFile("systray@_dbusname@pluginui.rc");
+
+    /* Init service and actions */
+    this->setServiceDescription("@_service_description@");
+
+}
+
+
+void @_dbusname@SystrayPlugin::doInit()
+{
+    ;
+}
+
+@_dbusname@SystrayPlugin::~@_dbusname@SystrayPlugin()
+{
+    //delete d->srAction;
+    delete d;
+}
+
+void @_dbusname@SystrayPlugin::serviceStatusChanged()
+{
+    // Call parent function to emit necessary signals
+    SystrayPlugin::emitServiceStatusChanged();
+}
+
+void @_dbusname@SystrayPlugin::serviceSystemStatusChanged()
+{
+    this->serviceStatusChanged();
+}
+
+void @_dbusname@SystrayPlugin::serviceInitialized(bool success)
+{
+    this->serviceStatusChanged();
+}
+
+
+
+

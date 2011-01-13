@@ -43,11 +43,13 @@ SystrayPluginManager::SystrayPluginManager():
         QString error;
         KService::Ptr service = *iter;
  
-        KPluginFactory *factory = KPluginLoader(service->library()).factory();
+        KPluginLoader loader(service->library());
+        KPluginFactory *factory = loader.factory();
  
         if (!factory)
         {
-            kError(5001) << "KPluginFactory could not load the plugin:" << service->library();
+            kError(5001) << "KPluginFactory could not load the plugin:" << service->library() << " Error: " << loader.errorString();
+
             continue;
         }
  

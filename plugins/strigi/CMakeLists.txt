@@ -28,7 +28,7 @@ install(
 
 install(
   FILES nepomuksystray_strigi.desktop
-  DESTINATION ${SERVICES_INSTALL_DIR}/nepomuksystray
+  DESTINATION ${SERVICES_INSTALL_DIR}/nepomukcontroller
   )
 
 install(FILES systraystrigipluginui.rc 
