@@ -5,9 +5,9 @@ install(
   DESTINATION ${SERVICETYPES_INSTALL_DIR}
   )
 
-macro(BUILDINSTALL_STANDARD_PLUGIN _servicename _dbusname _service_description _pluginsystemname )
+macro(BUILDINSTALL_STANDARD_PLUGIN _servicedesktopfile _dbusname _service_description _pluginsystemname )
   set(_dbusname ${_dbusname} )
-  set(_servicename ${_servicename} )
+  set(_servicedesktopfile ${_servicedesktopfile} )
   set(_service_description ${_service_description} )
   set(_pluginsystemname ${_pluginsystemname} )
   configure_file("basic_template/templateplugin.h.in" "${CMAKE_CURRENT_BINARY_DIR}/${_dbusname}plugin.h")
@@ -37,6 +37,6 @@ macro(BUILDINSTALL_STANDARD_PLUGIN _servicename _dbusname _service_description _
                DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 
 endmacro(BUILDINSTALL_STANDARD_PLUGIN)
 
-BUILDINSTALL_STANDARD_PLUGIN( "Query service" nepomukqueryservice "Handle queries" "Nepomuk query service plugin")
-BUILDINSTALL_STANDARD_PLUGIN( "Storage service" nepomukstorage "Storage Nepomuk data" "Nepomuk storage service plugin")
-BUILDINSTALL_STANDARD_PLUGIN( "File watching service" nepomukremovablestorageservice "Handles files on the removable storage" "Nepomuk removable storage service plugin")
+BUILDINSTALL_STANDARD_PLUGIN( "nepomukqueryservice.desktop" nepomukqueryservice "" "Nepomuk query service ")
+BUILDINSTALL_STANDARD_PLUGIN( "nepomukstorage.desktop" nepomukstorage "" "Nepomuk storage ")
+BUILDINSTALL_STANDARD_PLUGIN( "nepomukfilewatch.desktop" nepomukremovablestorageservice "" "Nepomuk removable storage service")

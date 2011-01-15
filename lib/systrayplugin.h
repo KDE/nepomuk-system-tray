@@ -32,6 +32,7 @@ class KAction;
 class KActionCollection;
 class KActionMenu;
 class QDBusPendingCallWatcher;
+class KDesktopFile;
 
 namespace Nepomuk
 {
@@ -69,7 +70,7 @@ namespace Nepomuk
              * service - org.kde.nepomuk.services.<dbusServiceName>. For example Strigi
              * has system name nepomukstigiservice.
              */
-            SystrayPlugin(QString serviceName, QString dbusServiceName, QObject *); 
+            SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString dbusServiceName, QObject *); 
 
             /*! \brief Returl the full name of the Service
              * Please keep it not very long - this name will appear in the menu.
@@ -119,32 +120,38 @@ namespace Nepomuk
              * all this in the extended statuses. Do not introduce new constants for the ShortStatus.
              */
              enum ShortStatus { 
-                 /* The service is running, making some job(s)  and everything is ok
+                 /*! The service has started and now perform initialization procedures.
+                  * Use this after DBus endpoint appears, but before service report about
+                  * successfull(or not) initialization. Using of this option is optional
+                  */
+                 Launching,
+                 /*! The service is running, making some job(s)  and everything is ok
                   */
                  Running, 
                  
-                 /* The service has successfully started, but don't do any job right now. For
+                 /*! The service has successfully started, but don't do any job right now. For
                   * example, successfuly started Strigi service that is not analyzing any file
                   * right now.
                   */
                  Idle, 
                  
-                 /* The service has successfully started, but was suspended by user. It wouldn't
+                 /*! The service has successfully started, but was suspended by user. It wouldn't
                   * do anything unless user resume it or service unresumes itself.
                   */
                  Suspended, 
                  
-                 /* The service has not started. Either because it should'd not or because some error
+                 /*! The service has not started. Either because it should'd not or because some error
                   * has happend. You should use this status when there D-Bus endpoint of the service
                   * doesn't exist
                   */
                  NotStarted,
 
-                 /* The service has started ( so the D-Bus endpoint of the service does exist and service
+                 /*! The service has started ( so the D-Bus endpoint of the service does exist and service
                   * is not hanged ) but can't do anything because of some error. E.g. "No space left on the device"
                   * and so on
                   */
-                 Failed
+                 Failed,
+
              };
              Q_ENUMS(ShortStatus);
 
@@ -294,8 +301,7 @@ namespace Nepomuk
              /*! \brief Return true if service was initialized
               * Checks that endpoint exist and return true if service is initialized
               * answerSlot will be called with given signal. Slot must have a signature
-              * answerSlot(bool). You should pass only name of the slot, so do not use
-              * SLOT() macros
+              * answerSlot(QDBusPendingCallWatcher* = 0). 
               */
              void isServiceInitialized(const char * answerMethod) const;
 
@@ -330,13 +336,14 @@ namespace Nepomuk
             void _k_serviceRegistered();
             void _k_serviceUnregistered();
             void _k_serviceOwnerChanged();
-            void _k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*);
+            //void _k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*);
             void _k_performInit();
-            void _k_ssr_stage2(bool);
-            void _k_ssr_stage3(QDBusPendingCallWatcher*);
-            void _k_ssr_stage4(QDBusPendingCallWatcher*);
+            void _k_ssr_stage2(QDBusPendingCallWatcher* = 0);
+            void _k_ssr_stage3(QDBusPendingCallWatcher* = 0);
+            void _k_ssr_stage4(QDBusPendingCallWatcher* = 0);
 
         private:
+             void callWithNull(const char * answerSlot) const;
              //void updateControlInterface();
              class Private;
              Private * const d;

@@ -28,6 +28,7 @@
 #include <KDualAction>
 #include <KActionMenu>
 #include <KActionCollection>
+#include <KDesktopFile>
 using namespace Nepomuk;
 
 K_PLUGIN_FACTORY(StrigiSystrayPluginFactory, registerPlugin< Nepomuk::StrigiSystrayPlugin >();)
@@ -44,7 +45,10 @@ class StrigiSystrayPlugin::Private
 };
 
 StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>&):
-    SystrayPlugin(i18n("Strigi File Indexer"),"nepomukstrigiservice",parent),
+    SystrayPlugin(
+            KDesktopFile("services","nepomukstrigiservice.desktop")
+            ,"nepomukstrigiservice",
+            parent),
     d(new Private())
 {
     /* Init XMLGUI part */
@@ -134,12 +138,17 @@ void StrigiSystrayPlugin::updateActions()
         return;
     }
 
-    isServiceInitialized("_k_ua_stage2");
+    isServiceInitialized(SLOT(_k_ua_stage2(QDBusPendingCallWatcher*)));
 }
 
-void StrigiSystrayPlugin::_k_ua_stage2(bool isInitialized)
+void StrigiSystrayPlugin::_k_ua_stage2(QDBusPendingCallWatcher * watcher)
 {
-    if (!isInitialized) {
+    if ( !watcher ) 
+        return;
+
+    watcher->deleteLater();
+    QDBusPendingReply<bool> isInitialized = *watcher;
+    if (!isInitialized.isValid() || !isInitialized.value()) {
         kDebug() << "Service is not initialized";
         return;
     }

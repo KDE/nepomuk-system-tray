@@ -51,8 +51,8 @@ namespace Nepomuk
             void slotSuspend(bool);
             
             // Pipeline for updateActions
-            void _k_ua_stage2(bool);
-            void _k_ua_stage3(QDBusPendingCallWatcher*);
+            void _k_ua_stage2(QDBusPendingCallWatcher * = 0);
+            void _k_ua_stage3(QDBusPendingCallWatcher* = 0);
         private:
             class Private;
             Private * const  d;

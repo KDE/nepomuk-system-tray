@@ -26,6 +26,7 @@
 #include <KDebug>
 #include <KDualAction>
 #include <KActionMenu>
+#include <KDesktopFile>
 #include <KActionCollection>
 using namespace Nepomuk;
 
@@ -37,14 +38,17 @@ class @_dbusname@SystrayPlugin::Private
 };
 
 @_dbusname@SystrayPlugin::@_dbusname@SystrayPlugin( QObject * parent,const QList<QVariant>&):
-    SystrayPlugin(i18n("@_servicename@"),"@_dbusname@",parent),
+    SystrayPlugin(
+            KDesktopFile("services","@_servicedesktopfile@"),
+            "@_dbusname@",
+            parent),
     d(new Private())
 {
     /* Init XMLGUI part */
     setXMLFile("systray@_dbusname@pluginui.rc");
 
     /* Init service and actions */
-    this->setServiceDescription("@_service_description@");
+    //this->setServiceDescription("@_service_description@");
 
 }
 
@@ -62,7 +66,7 @@ void @_dbusname@SystrayPlugin::doInit()
 
 void @_dbusname@SystrayPlugin::serviceInitialized(bool success)
 {
-    this->serviceSystemStatusChanged();
+    setShortStatus(Running);
 }
 
 

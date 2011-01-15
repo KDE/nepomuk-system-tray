@@ -25,6 +25,7 @@
 #include <QDBusConnectionInterface>
 #include <QDBusPendingCallWatcher>
 #include <KDebug>
+#include <KDesktopFile>
 #include <KLocale>
 
 using namespace Nepomuk;
@@ -45,14 +46,15 @@ class SystrayPlugin::Private
         //static OrgKdeNepomukServiceManagerInterface * mainServer();
 };
 
-SystrayPlugin::SystrayPlugin(QString serviceName, QString dbusServiceName, QObject * parent):
+SystrayPlugin::SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString dbusServiceName, QObject * parent):
     QObject(parent),
     d(new Private())
 {
     static QString dbusBase = NSERVICE_DBUS_NAME_PREFIX".%1";
     d->init = false;
-    d->name = serviceName;
-    d->shortName = serviceName;
+    d->name = serviceDesktopFile.readName();;
+    d->shortName = d->name;
+    d->description = serviceDesktopFile.readComment();
     d->dbusServiceName = dbusServiceName;
     d->dbusServiceAddress = dbusBase.arg(dbusServiceName);
     d->controlInterface = 0;
@@ -157,34 +159,7 @@ void SystrayPlugin::setShortStatus( ShortStatus status)
     emit shortStatusChanged(this, d->serviceShortStatus);
 }
 
-void SystrayPlugin::isServiceInitialized(const char * answerSlot) const
-{
-    // Now check the service endpoint
-    if (!d->controlInterface) {
-        int fakeAnswer;
-        bool falseAnswer = false;
-        QMetaObject::invokeMethod(
-                const_cast<SystrayPlugin*>(this),
-                answerSlot,
-                Qt::QueuedConnection,
-                Q_RETURN_ARG(int, fakeAnswer),
-                Q_ARG(bool,falseAnswer)
-                );
-        return;
-    }
-
-    QDBusPendingReply<bool> repl2 = d->controlInterface->isInitialized();
-    QDBusPendingCallWatcher * watcher = new QDBusPendingCallWatcher(repl2,0);
-
-    // Add answerSlot as dynamic proprety
-    watcher->setProperty("_k_forwardSlot",QVariant(answerSlot));
-
-    connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
-            this,SLOT(_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*))
-           );
-
-}
-
+#if 0
 void SystrayPlugin::_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher* reply)
 {
     //kDebug() << "Called _k_isServiceInitializedReplyHandler";
@@ -206,6 +181,7 @@ void SystrayPlugin::_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*
     }
     reply->deleteLater();
 }
+#endif
 
 bool SystrayPlugin::isServiceRegistered() const
 {
@@ -223,15 +199,38 @@ void SystrayPlugin::shortStatusUpdate()
         return;
     }
 
-    isServiceInitialized(
-            "_k_ssr_stage2"
-            );
+    isServiceInitialized(SLOT(_k_ssr_stage2(QDBusPendingCallWatcher*)));
 }
 
-void SystrayPlugin::_k_ssr_stage2(bool isInitialized)
+void SystrayPlugin::isServiceInitialized(const char * answerSlot) const
 {
-    if (!isInitialized) {
+    // Now check the service endpoint
+    if (!d->controlInterface) {
+        callWithNull(answerSlot);
+    }
+
+    QDBusPendingReply<bool> repl2 = d->controlInterface->isInitialized();
+    QDBusPendingCallWatcher * watcher = new QDBusPendingCallWatcher(repl2,0);
+
+    // Add answerSlot as dynamic proprety
+    //watcher->setProperty("_k_forwardSlot",QVariant(answerSlot));
+
+    connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
+            this,answerSlot
+           );
+
+}
+
+void SystrayPlugin::_k_ssr_stage2(QDBusPendingCallWatcher* watcher)
+{
+    QDBusPendingReply<bool> isInitialized = *watcher;
+    if ( !isInitialized.isValid() ) {
         setShortStatus(Failed);
+        return;
+    }
+    bool answer = isInitialized.value();
+    if (!answer) {
+        setShortStatus(Launching);
         return;
     }
 
@@ -249,8 +248,7 @@ void SystrayPlugin::isServiceSuspended(const char * answerSlot)
         return;
     }
     else {
-        // Skip this step directly to _k_ssr_stage3
-        this->_k_ssr_stage3(0);
+        callWithNull(answerSlot);
         return;
     }
 }
@@ -292,7 +290,7 @@ void SystrayPlugin::isServiceRunning(const char * answerSlot)
                );
     }
     else {
-        this->_k_ssr_stage4(0);
+        callWithNull(answerSlot);
         return;
     }
 }
@@ -351,7 +349,7 @@ void SystrayPlugin::_k_serviceUnregistered()
 
 void SystrayPlugin::_k_serviceOwnerChanged()
 {
-    setShortStatus(NotStarted);
+    setShortStatus(Launching);
     this->serviceOwnerChanged();
 }
 
@@ -359,10 +357,32 @@ void SystrayPlugin::serviceSystemStatusChanged()
 {;
 }
 
+void SystrayPlugin::callWithNull(const char * answerSlot) const
+{
+    QTimer::singleShot(0,const_cast<SystrayPlugin*>(this),answerSlot);
+#if 0
+    // Actually Qt-dependend hack
+    const char * slotSignature = answerSlot +1;
+    int methodIndex = this->metaObject()->indexOfMethod(slotSignature);
+    if (methodIndex == -1) {
+        kDebug() << "Can't found method: " << answerSlot;
+        return;
+    }
+    QMetaMethod method = this->metaObject()->method(methodIndex);
+    method.invoke(
+            const_cast<SystrayPlugin*>(this),
+            Qt::QueuedConnection,
+            Q_ARG(QDBusPendingCallWatcher *,0)
+            );
+    return;
+#endif
+}
+
 QString SystrayPlugin::shortStatusToString(ShortStatus status)
 {
    switch ( status )
    {
+       case (Launching) : return i18nc("@info:status Launching","Launching");
        case (Running) : return i18nc("@info:status Running","Running");
        case (Idle) : return i18nc("@info:status Idle", "Idle");
        case (Suspended) : return i18nc("@info:status Suspended", "Suspended");
