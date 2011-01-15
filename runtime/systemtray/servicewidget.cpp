@@ -98,12 +98,16 @@ void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
         this->actionsButton->setEnabled(true);
     }
 
-    this->statusLabel->setText(SystrayPlugin::shortStatusToString(plugin->shortStatus()));
+    this->statusLabel->setText(
+            shortStatusLabelText(plugin->shortStatus())
+            );
 }
 
 void SystrayServiceWidget::onShortStatusChanged(SystrayPlugin* plugin, SystrayPlugin::ShortStatus status)
 {
-    this->statusLabel->setText(SystrayPlugin::shortStatusToString(status));
+    this->statusLabel->setText(
+            shortStatusLabelText(status)
+            );
 }
 
 void SystrayServiceWidget::onStatusMessageChanged(Nepomuk::SystrayPlugin*,QString message)
@@ -116,4 +120,21 @@ void SystrayServiceWidget::setShown(bool shown)
         this->show();
     else 
         this->hide();
+}
+
+QString SystrayServiceWidget::shortStatusLabelText(SystrayPlugin::ShortStatus status)
+{
+    static QString shortStatusStringTemplate = QString("<font color='%1'>%2</font>");
+    QColor textColor;
+    switch(status)
+    {
+        case( SystrayPlugin::Running):
+        case (SystrayPlugin::Idle): { textColor = QColor::fromRgbF(0,1,0); break; }
+        case (SystrayPlugin::Suspended): { textColor = QColor::fromRgbF(0.5,0.5,0); break; }
+        case (SystrayPlugin::Launching): { textColor = QColor::fromRgbF(0,0,1); break; }
+        case(SystrayPlugin::Failed) : { textColor = QColor::fromRgbF(1.0,0,0); break; }
+        default : { textColor = QColor::fromRgbF(0,0,0); break; }
+    }
+    return shortStatusStringTemplate.arg(textColor.name(),SystrayPlugin::shortStatusToString(status));
+
 }

@@ -42,6 +42,7 @@ namespace  Nepomuk {
             void onShortStatusChanged(Nepomuk::SystrayPlugin*, Nepomuk::SystrayPlugin::ShortStatus);
             void onStatusMessageChanged(Nepomuk::SystrayPlugin*,QString);
         private:
+            static QString shortStatusLabelText(SystrayPlugin::ShortStatus status);
             class Private;
             Private * const d;
     };
