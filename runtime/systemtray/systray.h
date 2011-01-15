@@ -20,14 +20,16 @@
 #ifndef NEPOMUK_SERVICE_SYSTRAY_H
 #define NEPOMUK_SERVICE_SYSTRAY_H
 
+#include <QtCore/QList>
+
 #include <KStatusNotifierItem>
-#include <QList>
 #include <KSharedConfig>
 #include <KXMLGUIClient>
 
+#include "systrayplugin.h"
+
 class QAction;
 class KDualAction;
-class SystrayPlugin;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
 
@@ -45,12 +47,16 @@ namespace Nepomuk {
         private Q_SLOTS:
             void slotConfigure();
             void pluginInitialized(Nepomuk::SystrayPlugin*);
-            void updateToolTip(Nepomuk::SystrayPlugin*);
+            void updateToolTip(Nepomuk::SystrayPlugin::ShortStatus);
 
+        Q_SIGNALS:
+            // This signal is used to react on plugin::shortStatusChanged signal
+            // and call plugin::shortStatusRequest slot. This way every time short 
+            // status is changed, we request for this status
+            //void mirrorSignal();
         private:
             void loadPlugins();
             void finishOurInitialization();
-            static QString pluginShortStatusString(SystrayPlugin * );
             void buildToolTip();
             // This counter is used to count how many plugins are performing
             // initialization in the moment. Each time init() is called,

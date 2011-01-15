@@ -35,27 +35,29 @@ namespace Nepomuk
         public:
             StrigiSystrayPlugin(QObject *,const QList<QVariant>&);
             virtual ~StrigiSystrayPlugin();
-            /*
-            virtual KActionCollection * actions() const; 
-            virtual KActionMenu * menu() const; 
-            */
-            virtual ShortStatus shortStatus() const;
-            //virtual QStringList actionSystemNames() const;
-            //virtual QString serviceStatusMessage() const;
-            //virtual QString serviceErrorMessage() const;
+            virtual void shortStatusRequest() const;
             virtual bool userOriented() const { return true; }
         protected:
             virtual void doInit();
 
         protected Q_SLOTS:
 
-            void serviceStatusChanged();
-            virtual void serviceSystemStatusChanged();
             virtual void serviceInitialized(bool);
              
             void updateActions();
         private Q_SLOTS:
             void slotSuspend(bool);
+            
+            void isServiceSuspended(const char * answerSlot);
+            void isServiceIndexing(const char * answerSlot);
+            // Pipeline for short status request
+            void _k_ssr_stage2(bool);
+            void _k_ssr_stage3(QDBusPendingCallWatcher*);
+            void _k_ssr_stage4(QDBusPendingCallWatcher*);
+
+            // Pipeline for updateActions
+            void _k_ua_stage2(bool);
+            void _k_ua_stage3(QDBusPendingCallWatcher*);
         private:
             class Private;
             Private * const  d;

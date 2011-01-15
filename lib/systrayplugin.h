@@ -31,6 +31,7 @@
 class KAction;
 class KActionCollection;
 class KActionMenu;
+class QDBusPendingCallWatcher;
 
 namespace Nepomuk
 {
@@ -110,6 +111,12 @@ namespace Nepomuk
              */
             virtual bool userOriented() const { return false; }
 
+
+            /*! \brief Whether or not this service has a status message
+             * Default implementation returns false. Do not forget to overload this
+             * method if you have overloaded serviceStatusMessageRequest()
+             */
+            virtual bool hasStatusMessage() const { return false; }
             /*! \brief This is the predefined set of constants that describes the state of the service.
              * Of course, you service can have more states, e.g. "No space left on the device" or "I am in pain!". You can use
              * all this in the extended statuses. Do not introduce new constants for the ShortStatus.
@@ -142,6 +149,7 @@ namespace Nepomuk
                   */
                  Failed
              };
+             Q_ENUMS(ShortStatus);
 
              /*! \brief This method returns the short status of the service
               * If you service supports more statuses then select the most appropriate one. <b>Do not return
@@ -149,8 +157,9 @@ namespace Nepomuk
               * You <b>must</b> implement this method. It is vital!
               * Default implementation can only distinguish between Running, NotStarted
               * and Failed states
+              * Result should be return with shortStatusReply signal
               */
-             virtual ShortStatus shortStatus() const;
+             virtual void shortStatusRequest() const;
 
              /*! \brief Return the arbitrary service status description
               * This is the method where you can use all status messages you wan't to use.
@@ -159,10 +168,14 @@ namespace Nepomuk
               * If service doesn't have status message, return null or empty QString
               * If service has an error and you don't have a message for this error,
               * you should return null or empty string.
-              * Default implemntation will return Null string.
+              * Default implemntation will return Null string and will do in 
+              * <b>synchroniously</b>. Be aware of deadlocks. You should rather
+              * check hasStatusMessage() before using this method
+              * Result should be returned with serviceStatusMessageReply signal
+              *
               * \sa shortStatus()
               */
-             virtual QString serviceStatusMessage() const;
+             virtual void serviceStatusMessageRequest() const;
 
 
              /*! \brief Return the service error message
@@ -207,17 +220,26 @@ namespace Nepomuk
          Q_SIGNALS:
              /*! \brief Emit this signal when you short status has changed
               */
-             void shortStatusChanged(Nepomuk::SystrayPlugin *);
+             //void shortStatusChanged(Nepomuk::SystrayPlugin *);
 
              /*! \brief Emit this signal when your status message or error message has changed
               */
-             void statusMessageChanged(Nepomuk::SystrayPlugin*);
+             //void statusMessageChanged(Nepomuk::SystrayPlugin*);
 
              /*! \brief This signal is for system use. 
               * It is automatically emited when plugin finish initialization.
               * <b> NEVER SEND IT MANUALLY </b>
               */
              void initializationFinished(Nepomuk::SystrayPlugin *);
+
+
+             /*! \brief This signal emited with reply about short status of the service
+              */
+             void shortStatusReply( Nepomuk::SystrayPlugin::ShortStatus status) const;
+
+             /*! \brief This signal emited with reply for the request about service status message
+              */
+             void serviceStatusMessageReply( QString statusMessage ) const;
          protected Q_SLOTS:
              /*! \brief This slot is called when service is initialized
               * Default implementation will call serviceSystemStatusChanged()
@@ -252,13 +274,8 @@ namespace Nepomuk
               * when service is registred, unregistred and so on.
               * You can implement this method or reimplement the above methods.
               */
-             virtual void serviceSystemStatusChanged() = 0;
+             virtual void serviceSystemStatusChanged();
              
-             /*! \brief This is convinience slot to emit all necessary signals when state of the service is cnanged
-              * It will emit shortStatusChanged(), statusMessageChanged() and some others.
-              * Use it when, for example, service is registered or unregistered and so on
-              */
-             void emitServiceStatusChanged();
 
          protected:
              /*! \brief Use this method to set the description of the service
@@ -273,8 +290,11 @@ namespace Nepomuk
 
              /*! \brief Return true if service was initialized
               * Checks that endpoint exist and return true if service is initialized
+              * answerSlot will be called with given signal. Slot must have a signature
+              * answerSlot(bool). You should pass only name of the slot, so do not use
+              * SLOT() macros
               */
-             bool isServiceInitialized() const;
+             void isServiceInitialized(const char * answerMethod) const;
 
              /*! \brief Checks that necessary DBus endpoint for service exists.
               */
@@ -289,6 +309,9 @@ namespace Nepomuk
             void _k_serviceRegistered();
             void _k_serviceUnregistered();
             void _k_serviceOwnerChanged();
+            void _k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*);
+            void _k_performInit();
+            void _k_ssr_stage2(bool isInitialized);
 
         private:
              //void updateControlInterface();

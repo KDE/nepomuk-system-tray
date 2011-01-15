@@ -73,11 +73,11 @@ void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
     disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
             this,SLOT(doInit(Nepomuk::SystrayPlugin*))
            );
-    connect(plugin,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*)),
-            this,SLOT(onShortStatusChanged())
+    connect(plugin,SIGNAL(shortStatusReply(Nepomuk::SystrayPlugin::ShortStatus)),
+            this,SLOT(onShortStatusChanged(Nepomuk::SystrayPlugin::ShortStatus))
            );
-    connect(plugin,SIGNAL(statusMessageChanged(Nepomuk::SystrayPlugin*)),
-            this,SLOT(onStatusMessageChanged())
+    connect(plugin,SIGNAL(serviceStatusMessageReply(QString)),
+            this,SLOT(onStatusMessageChanged(QString))
            );
 
     // Handle some constant parameters - name of service, menu etc
@@ -95,16 +95,15 @@ void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
         this->actionsButton->setEnabled(true);
     }
 
-    onShortStatusChanged();
+    plugin->shortStatusRequest();
 }
 
-void SystrayServiceWidget::onShortStatusChanged()
+void SystrayServiceWidget::onShortStatusChanged(SystrayPlugin::ShortStatus status)
 {
-    SystrayPlugin::ShortStatus status = d->plugin->shortStatus();
     this->statusLabel->setText(SystrayPlugin::shortStatusToString(status));
 }
 
-void SystrayServiceWidget::onStatusMessageChanged()
+void SystrayServiceWidget::onStatusMessageChanged(QString message)
 {
 }
 

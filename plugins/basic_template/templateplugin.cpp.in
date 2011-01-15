@@ -60,20 +60,9 @@ void @_dbusname@SystrayPlugin::doInit()
     delete d;
 }
 
-void @_dbusname@SystrayPlugin::serviceStatusChanged()
-{
-    // Call parent function to emit necessary signals
-    SystrayPlugin::emitServiceStatusChanged();
-}
-
-void @_dbusname@SystrayPlugin::serviceSystemStatusChanged()
-{
-    this->serviceStatusChanged();
-}
-
 void @_dbusname@SystrayPlugin::serviceInitialized(bool success)
 {
-    this->serviceStatusChanged();
+    this->serviceSystemStatusChanged();
 }
 
 

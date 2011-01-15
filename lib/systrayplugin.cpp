@@ -23,6 +23,7 @@
 
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDBusPendingCallWatcher>
 #include <KDebug>
 #include <KLocale>
 
@@ -54,41 +55,47 @@ SystrayPlugin::SystrayPlugin(QString serviceName, QString dbusServiceName, QObje
     d->dbusServiceName = dbusServiceName;
     d->dbusServiceAddress = dbusBase.arg(dbusServiceName);
     d->controlInterface = 0;
-    // Trying to create service control interface
-    d->controlInterface = new OrgKdeNepomukServiceControlInterface(
-            d->dbusServiceAddress,
-            NEPOMUK_SERVICECONTROL_PATH,
-            QDBusConnection::sessionBus(),
-            this);
-
-    connect(d->controlInterface, SIGNAL(serviceInitialized(bool)),
-            this,SLOT(serviceInitialized(bool))
-           );
-
-    // Setup watching for service registration.
-    // We need this because service can be restarted for example.
-    d->watcher = new QDBusServiceWatcher(
-            d->dbusServiceAddress,
-            QDBusConnection::sessionBus(),
-            QDBusServiceWatcher::WatchForRegistration|QDBusServiceWatcher::WatchForUnregistration | QDBusServiceWatcher::WatchForOwnerChange,
-            this);
-    connect(d->watcher,SIGNAL(serviceRegistered(const QString &)),
-            this, SLOT(_k_serviceRegistered())
-           );
-    connect(d->watcher,SIGNAL(serviceUnregistered(const QString &)),
-            this, SLOT(_k_serviceUnregistered())
-           );
-    /*
-    connect(d->watcher,SIGNAL(serviceOwnerChanged(const QString &)),
-            this, SLOT(_k_serviceOwnerChanged())
-           );
-           */
+    d->watcher = 0;
 
 }
 
 void SystrayPlugin::init()
 {
+       QMetaObject::invokeMethod(this,"_k_performInit",Qt::QueuedConnection);
+}
+
+void SystrayPlugin::_k_performInit()
+{
     if ( !d->init) {
+        // Trying to create service control interface
+        d->controlInterface = new OrgKdeNepomukServiceControlInterface(
+                d->dbusServiceAddress,
+                NEPOMUK_SERVICECONTROL_PATH,
+                QDBusConnection::sessionBus(),
+                this);
+
+        connect(d->controlInterface, SIGNAL(serviceInitialized(bool)),
+                this,SLOT(serviceInitialized(bool))
+               );
+
+        // Setup watching for service registration.
+        // We need this because service can be restarted for example.
+        d->watcher = new QDBusServiceWatcher(
+                d->dbusServiceAddress,
+                QDBusConnection::sessionBus(),
+                QDBusServiceWatcher::WatchForRegistration|QDBusServiceWatcher::WatchForUnregistration | QDBusServiceWatcher::WatchForOwnerChange,
+                this);
+        connect(d->watcher,SIGNAL(serviceRegistered(const QString &)),
+                this, SLOT(_k_serviceRegistered())
+               );
+        connect(d->watcher,SIGNAL(serviceUnregistered(const QString &)),
+                this, SLOT(_k_serviceUnregistered())
+               );
+        /*
+        connect(d->watcher,SIGNAL(serviceOwnerChanged(const QString &)),
+                this, SLOT(_k_serviceOwnerChanged())
+               );
+               */
         this->doInit();
         d->init = true;
         emit initializationFinished(this); 
@@ -134,74 +141,56 @@ void SystrayPlugin::setServiceDescription( const QString & description )
     d->description = description;
 }
 
-bool SystrayPlugin::isServiceInitialized() const
+void SystrayPlugin::isServiceInitialized(const char * answerSlot) const
 {
-#if 0
-    /* Ask org.kde.NepomukServer first */
-
-    // Check that server exists
-    QScopedPointer<OrgKdeNepomukServiceManagerInterface> nserverIface = new OrgKdeNepomukServiceManagerInterface(
-            NEPOMUKSERVER_ADDRESS,
-            NEPOMUKSERVER_SERVICEMANAGER_PATH,
-            QDBusConnection::sessionBus(),
-            0);
-
-    if (!nserverIface->isValid() )
-        return false;
-
-    // Ask it about status of the service
-    QDBusPendingReply<bool> repl1 = nserverIface->isServiceRunning(d->dbusServiceName);
-
-    repl1->waitForFinished();
-    if ( !repl1->isValid() ) {
-        // Then it looks like NepomukServer doesn't respond for messages
-        // Probably it hangs. So the rest of services probably too.
-        // return false.
-        return false;
-    }
-
-    bool answer1 = repl1->value();
-
-    if (!answer1)
-        return false;
-#endif
     // Now check the service endpoint
+    if (!d->controlInterface) {
+        int fakeAnswer;
+        bool falseAnswer = false;
+        QMetaObject::invokeMethod(
+                const_cast<SystrayPlugin*>(this),
+                answerSlot,
+                Qt::QueuedConnection,
+                Q_RETURN_ARG(int, fakeAnswer),
+                Q_ARG(bool,falseAnswer)
+                );
+        return;
+    }
 
     QDBusPendingReply<bool> repl2 = d->controlInterface->isInitialized();
-    repl2.waitForFinished();
+    QDBusPendingCallWatcher * watcher = new QDBusPendingCallWatcher(repl2,0);
 
+    // Add answerSlot as dynamic proprety
+    watcher->setProperty("_k_forwardSlot",QVariant(answerSlot));
+
+    connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
+            this,SLOT(_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*))
+           );
+
+}
+
+void SystrayPlugin::_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher* reply)
+{
+    //kDebug() << "Called _k_isServiceInitializedReplyHandler";
+    QByteArray tmpString = reply->property("_k_forwardSlot").toString().toAscii();
+    const char * forwardSlot = tmpString.data(); 
+    //kDebug() << "Forward slot is: " << forwardSlot;
+    bool answer;
+    QDBusPendingReply<bool> repl2 = *reply;
     if (!repl2.isValid()) {
         kDebug() << "Hasn't recieved reply from service. Error:" << repl2.error().message();
-        return false;
+        answer = false;
+    }
+    else {
+        answer = repl2.value();
     }
 
-    bool answer2 = repl2.value();
-
-    return answer2;
-}
-
-#if 0
-// THis function is unnecessary now
-// It is conservated
-void SystrayPlugin::updateControlInterface()
-{
-    if (d->controlInterface)
-        delete d->controlInterface;
-
-    // Trying to create service control interface
-    d->controlInterface = new OrgKdeNepomukServiceControlInterface(
-            d->dbusServiceAddress,
-            NEPOMUK_SERVICECONTROL_PATH,
-            QDBusConnection::sessionBus(),
-            this);
-    // Check that we succeeded
-    if (!d->controlInterface->isValid() ) {
-        // we are not
-        delete d->controlInterface;
-        d->controlInterface = 0;
+    int fakeAnswer;
+    if (!QMetaObject::invokeMethod(this,forwardSlot,Qt::DirectConnection, Q_ARG(bool,answer))) {
+        kDebug() << "Forwarding call failed";
     }
+    reply->deleteLater();
 }
-#endif
 
 bool SystrayPlugin::isServiceRegistered() const
 {
@@ -212,27 +201,32 @@ bool SystrayPlugin::isServiceRegistered() const
         return false;
 }
 
-SystrayPlugin::ShortStatus SystrayPlugin::shortStatus() const
+void SystrayPlugin::shortStatusRequest() const
 {
     if (!isServiceRegistered()) {
-        return NotStarted;
+        emit shortStatusReply(NotStarted);
+        return;
     }
-    else if (!isServiceInitialized()) {
-        return Failed;
-    }
-    else return Running;
+
+    isServiceInitialized(
+            "_k_ssr_stage2"
+            );
 }
 
-
-void SystrayPlugin::emitServiceStatusChanged()
+void SystrayPlugin::_k_ssr_stage2(bool isInitialized)
 {
-    emit shortStatusChanged(this);
-    emit statusMessageChanged(this);
+    //kDebug() << "_k_ssr_stage2 called";
+    if (isInitialized) {
+        emit shortStatusReply(Running);
+    }
+    else {
+        emit shortStatusReply(Failed);
+    }
 }
 
-QString SystrayPlugin::serviceStatusMessage() const
+void SystrayPlugin::serviceStatusMessageRequest() const
 {
-    return QString();
+    emit serviceStatusMessageReply(QString());
 }
 
 QString SystrayPlugin::dbusServiceName() const
@@ -256,13 +250,12 @@ void SystrayPlugin::_k_serviceOwnerChanged()
     this->serviceOwnerChanged();
 }
 
-/*
-OrgKdeNepomukServiceManagerInterface * SystrayPlugin::Private::mainServer()
+void SystrayPlugin::serviceSystemStatusChanged()
 {
-    static OrgKdeNepomukServiceManagerInterface * _s = new OrgKdeNepomukServiceManagerInterface(NEPOMUKSERVER_ADDRESS,NEPOMUKSERVER_SERVICEMANAGER_PATH, QDBusConnection::sessionBus(),0);
-    return _s;
+    shortStatusRequest();
+    if (this->hasStatusMessage())
+        this->serviceStatusMessageRequest();
 }
-*/
 
 QString SystrayPlugin::shortStatusToString(ShortStatus status)
 {
@@ -271,8 +264,8 @@ QString SystrayPlugin::shortStatusToString(ShortStatus status)
        case (Running) : return i18nc("@info:status Running","Running");
        case (Idle) : return i18nc("@info:status Idle", "Idle");
        case (Suspended) : return i18nc("@info:status Suspended", "Suspended");
-       case (NotStarted) : return i18nc("@info:status Not started", "Not started");
-       case (Failed) : return i18nc("@info:status Failed", "Failed");
+       case (NotStarted) : return i18nc("@info:status Service is not working cause it should not", "Not started");
+       case (Failed) : return i18nc("@info:status Service is not working because it met some error and crashed/not work as intended ", "Failed");
        default: return i18nc("@info:status Status unknown", "Unknown");
    } 
    return QString();

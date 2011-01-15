@@ -20,25 +20,29 @@
 #define NEPOMUK_SYSTRAY_SERVICEWIDGET_H
 
 #include <QtGui/QWidget>
+#include <QtCore/QString>
+
+#include "systrayplugin.h"
 
 #include "ui_serviceWidget.h"
 
 class KXMLGUIFactory;
 
 namespace  Nepomuk {
-    class SystrayPlugin;
 
     class SystrayServiceWidget : public QFrame, public Ui_serviceWidget
     {
         Q_OBJECT;
         public:
             SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactory * factory = 0, QWidget * parent = 0);
+        Q_SIGNALS:
+            void mirrorSignal();
         public Q_SLOTS:
             void setShown(bool);
         private Q_SLOTS:
             void doInit(Nepomuk::SystrayPlugin * plugin);
-            void onShortStatusChanged();
-            void onStatusMessageChanged();
+            void onShortStatusChanged(Nepomuk::SystrayPlugin::ShortStatus);
+            void onStatusMessageChanged(QString);
         private:
             class Private;
             Private * const d;

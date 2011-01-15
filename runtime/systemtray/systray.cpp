@@ -118,7 +118,7 @@ void Nepomuk::SystemTray::loadPlugins()
                this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
               );
        m_pluginsCurrentlyInitializing += 1;
-       QMetaObject::invokeMethod(plugin,"init",Qt::QueuedConnection);
+       plugin->init();
     }
 }
 
@@ -133,21 +133,30 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
     disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
                this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
               );
+    // We connect plugin's signal shortStatusChanged with plugin's slot
+    // shortStatusRequest through our proxy signal because it is correct way.
+#if 0
     connect(plugin,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*)),
-            this,SLOT(updateToolTip(Nepomuk::SystrayPlugin*))
+            this,SIGNAL(mirrorSignal())
            );
-
+    connect(this,SIGNAL(mirrorSignal()),
+            plugin,SLOT(shortStatusRequest())
+           );
+#endif
     // Add it to the factory
     m_factory->addClient(plugin);
 
     // Assign index and add current status to the cache
+    connect(plugin,SIGNAL(shortStatusReply(Nepomuk::SystrayPlugin::ShortStatus)),
+            this,SLOT(updateToolTip(Nepomuk::SystrayPlugin::ShortStatus))
+            );
     m_pluginsIndexes[plugin] = m_statusCache.size();
-        m_statusCache.append(
-                pluginShortStatusString(plugin)
-                );
+    m_statusCache.append(QString());
 
    // Add it to the main widget
    m_mainWidget->addPlugin(plugin);
+
+   plugin->shortStatusRequest();
 
    if ( m_pluginsCurrentlyInitializing == 0)
        finishOurInitialization();
@@ -179,11 +188,20 @@ void Nepomuk::SystemTray::finishOurInitialization()
 
 }
 
-void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin)
+void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin::ShortStatus status)
 {
+    
+    Nepomuk::SystrayPlugin * plugin = qobject_cast<Nepomuk::SystrayPlugin*>(sender());
+    if (!plugin) {
+        kDebug() << "Recived signal not from plugin";
+        return;
+    }
+
+    kDebug() << "Plugin " << plugin->objectName() << "changed status to " << SystrayPlugin::shortStatusToString(status);
+
     // Get plugin index
     int index = m_pluginsIndexes[plugin];
-    m_statusCache[index] = pluginShortStatusString(plugin);
+    m_statusCache[index] = Nepomuk::SystrayPlugin::shortStatusToString(status);
 
     // Refresh tooltip
     buildToolTip();
@@ -195,8 +213,3 @@ void Nepomuk::SystemTray::buildToolTip()
     this->setToolTipSubTitle(m_statusCache.join("\n"));
 }
 
-QString Nepomuk::SystemTray::pluginShortStatusString(SystrayPlugin * plugin )
-{
-    return plugin->shortServiceName() % ": " %
-        SystrayPlugin::shortStatusToString(plugin->shortStatus());
-}

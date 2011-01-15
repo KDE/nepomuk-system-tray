@@ -38,3 +38,5 @@ macro(BUILDINSTALL_STANDARD_PLUGIN _servicename _dbusname _service_description _
 endmacro(BUILDINSTALL_STANDARD_PLUGIN)
 
 BUILDINSTALL_STANDARD_PLUGIN( "Query service" nepomukqueryservice "Handle queries" "Nepomuk query service plugin")
+BUILDINSTALL_STANDARD_PLUGIN( "Storage service" nepomukstorage "Storage Nepomuk data" "Nepomuk storage service plugin")
+BUILDINSTALL_STANDARD_PLUGIN( "File watching service" nepomukremovablestorageservice "Handles files on the removable storage" "Nepomuk removable storage service plugin")

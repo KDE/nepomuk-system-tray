@@ -41,8 +41,6 @@ namespace Nepomuk
 
         protected Q_SLOTS:
 
-            void serviceStatusChanged();
-            virtual void serviceSystemStatusChanged();
             virtual void serviceInitialized(bool);
         private:
             class Private;
