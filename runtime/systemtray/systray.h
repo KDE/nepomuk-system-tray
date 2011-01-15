@@ -47,7 +47,7 @@ namespace Nepomuk {
         private Q_SLOTS:
             void slotConfigure();
             void pluginInitialized(Nepomuk::SystrayPlugin*);
-            void updateToolTip(Nepomuk::SystrayPlugin::ShortStatus);
+            void updateToolTip(Nepomuk::SystrayPlugin * ,Nepomuk::SystrayPlugin::ShortStatus);
 
         Q_SIGNALS:
             // This signal is used to react on plugin::shortStatusChanged signal

@@ -116,7 +116,13 @@ KActionMenu * StrigiSystrayPlugin::menu() const
 
 void StrigiSystrayPlugin::serviceInitialized(bool success)
 {
-    this->serviceSystemStatusChanged();
+    setShortStatus(Running);
+    serviceSystemStatusChanged();
+}
+
+void StrigiSystrayPlugin::serviceSystemStatusChanged()
+{
+    updateActions();
 }
 
 void StrigiSystrayPlugin::updateActions()
@@ -143,6 +149,9 @@ void StrigiSystrayPlugin::_k_ua_stage2(bool isInitialized)
 
 void StrigiSystrayPlugin::_k_ua_stage3(QDBusPendingCallWatcher * watcher)
 {
+    if (!watcher)
+        return;
+
     QDBusPendingReply<bool> isSuspended = *watcher;
     watcher->deleteLater();
 
@@ -168,94 +177,17 @@ void StrigiSystrayPlugin::_k_ua_stage3(QDBusPendingCallWatcher * watcher)
     
 }
 
-void StrigiSystrayPlugin::shortStatusRequest() const
-{
-    if (!isServiceRegistered()) {
-        emit shortStatusReply(NotStarted);
-        return;
-    }
 
-    isServiceInitialized("_k_ssr_stage2");
+QDBusPendingCallWatcher * StrigiSystrayPlugin::isServiceSuspendedRequest()
+{
+    QDBusPendingReply<bool> reply = d->strigiInteface->isSuspended();
+    return new QDBusPendingCallWatcher(reply,0);
 }
 
-void StrigiSystrayPlugin::_k_ssr_stage2(bool isInitialized)
+QDBusPendingCallWatcher * StrigiSystrayPlugin::isServiceRunningRequest()
 {
-    if (!isInitialized) {
-        emit shortStatusReply(Failed);
-        return;
-    }
-
-    isServiceSuspended(SLOT(_k_ssr_stage3(QDBusPendingCallWatcher*)));
-
-}
-
-void StrigiSystrayPlugin::isServiceSuspended(const char * answerSlot)
-{
-    Q_CHECK_PTR(d->strigiInteface);
-    QDBusPendingReply<bool> repl1 = d->strigiInteface->isSuspended();
-    QDBusPendingCallWatcher * watcher = new QDBusPendingCallWatcher(repl1,this);
-
-    connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
-            this,answerSlot
-           );
-}
-
-void StrigiSystrayPlugin::_k_ssr_stage3(QDBusPendingCallWatcher * watcher)
-{
-    QDBusPendingReply<bool> isSuspended = *watcher;
-    watcher->deleteLater();
-
-    if (!isSuspended.isValid()) {
-        // Failed
-        kDebug() << "Hasn't recieved reply from service. Error:" << isSuspended.error().message();
-        emit shortStatusReply(Failed);
-        return;
-    }
-
-    bool answer;
-    answer = isSuspended.value();
-
-    if (answer) {
-        emit shortStatusReply(Suspended);
-        return;
-    }
-
-    // Check for idle
-    isServiceIndexing(SLOT(_k_ssr_stage4(QDBusPendingCallWatcher*)));
-}
-
-void StrigiSystrayPlugin::isServiceIndexing(const char * answerSlot)
-{
-    Q_CHECK_PTR(d->strigiInteface);
-    QDBusPendingReply<bool> repl1 = d->strigiInteface->isIndexing();
-    QDBusPendingCallWatcher * watcher = new QDBusPendingCallWatcher(repl1,this);
-
-    connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
-            this,answerSlot
-           );
-}
-
-void StrigiSystrayPlugin::_k_ssr_stage4(QDBusPendingCallWatcher * watcher)
-{
-    QDBusPendingReply<bool> isIndexing = *watcher;
-    watcher->deleteLater();
-    // Running, but may be idle
-    if (!isIndexing.isValid()) {
-        // Error. Probably hung
-        emit shortStatusReply(Failed);
-        return;
-    }
-    else {
-        bool answer = isIndexing.value();
-        if ( answer ) {
-            // Indexing
-            emit shortStatusReply(Running);
-            return;
-        }
-        
-        emit shortStatusReply(Idle);
-        return ;
-    }
+    QDBusPendingReply<bool> reply = d->strigiInteface->isIndexing();
+    return new QDBusPendingCallWatcher(reply,0);
 }
 
 void StrigiSystrayPlugin::slotSuspend(bool)

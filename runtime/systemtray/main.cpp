@@ -47,6 +47,7 @@ int main( int argc, char *argv[] )
 
     if( KUniqueApplication::start() ) {
         KUniqueApplication app;
+        app.setQuitOnLastWindowClosed(false);
         // trueg: Hack: we need to pass a 0 parent since otherwise the app would crash on exit due to some double deletion in K/QMenu
         (void)new Nepomuk::SystemTray( 0 /* &app */ );
         return app.exec();

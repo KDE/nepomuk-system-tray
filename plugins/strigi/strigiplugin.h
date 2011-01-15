@@ -35,10 +35,12 @@ namespace Nepomuk
         public:
             StrigiSystrayPlugin(QObject *,const QList<QVariant>&);
             virtual ~StrigiSystrayPlugin();
-            virtual void shortStatusRequest() const;
             virtual bool userOriented() const { return true; }
         protected:
             virtual void doInit();
+            void serviceSystemStatusChanged();
+            QDBusPendingCallWatcher * isServiceSuspendedRequest();
+            QDBusPendingCallWatcher * isServiceRunningRequest();
 
         protected Q_SLOTS:
 
@@ -48,13 +50,6 @@ namespace Nepomuk
         private Q_SLOTS:
             void slotSuspend(bool);
             
-            void isServiceSuspended(const char * answerSlot);
-            void isServiceIndexing(const char * answerSlot);
-            // Pipeline for short status request
-            void _k_ssr_stage2(bool);
-            void _k_ssr_stage3(QDBusPendingCallWatcher*);
-            void _k_ssr_stage4(QDBusPendingCallWatcher*);
-
             // Pipeline for updateActions
             void _k_ua_stage2(bool);
             void _k_ua_stage3(QDBusPendingCallWatcher*);

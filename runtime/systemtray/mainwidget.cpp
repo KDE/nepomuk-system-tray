@@ -29,6 +29,7 @@ MainWidget::MainWidget(KXMLGUIFactory * factory, QWidget * parent ):
     QWidget(parent)
 {
     this->setupUi(this); 
+    this->setAttribute(Qt::WA_DeleteOnClose,false);
     //m_pluginLayout = new QVBoxLayout();
     //m_pluginLayout->setObjectName("pluginLayout");
     

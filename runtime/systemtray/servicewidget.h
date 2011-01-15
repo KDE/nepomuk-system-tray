@@ -35,14 +35,12 @@ namespace  Nepomuk {
         Q_OBJECT;
         public:
             SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactory * factory = 0, QWidget * parent = 0);
-        Q_SIGNALS:
-            void mirrorSignal();
         public Q_SLOTS:
             void setShown(bool);
         private Q_SLOTS:
             void doInit(Nepomuk::SystrayPlugin * plugin);
-            void onShortStatusChanged(Nepomuk::SystrayPlugin::ShortStatus);
-            void onStatusMessageChanged(QString);
+            void onShortStatusChanged(Nepomuk::SystrayPlugin*, Nepomuk::SystrayPlugin::ShortStatus);
+            void onStatusMessageChanged(Nepomuk::SystrayPlugin*,QString);
         private:
             class Private;
             Private * const d;

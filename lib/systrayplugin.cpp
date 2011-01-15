@@ -41,6 +41,7 @@ class SystrayPlugin::Private
         QDBusServiceWatcher * watcher;
         QStringList actionNamesCache;
         bool init;
+        ShortStatus serviceShortStatus;
         //static OrgKdeNepomukServiceManagerInterface * mainServer();
 };
 
@@ -99,6 +100,8 @@ void SystrayPlugin::_k_performInit()
         this->doInit();
         d->init = true;
         emit initializationFinished(this); 
+        setShortStatus(NotStarted);
+        shortStatusUpdate();
     }
 }
 
@@ -128,17 +131,30 @@ QString SystrayPlugin::shortServiceName() const
     return d->shortName;
 }
 
-void SystrayPlugin::setShortServiceName(const QString & name)
-{d->shortName = name;}
-
 QString SystrayPlugin::serviceDescription() const
 {
     return d->description;
 }
 
+SystrayPlugin::ShortStatus SystrayPlugin::shortStatus() const
+{
+    return d->serviceShortStatus;
+}
+void SystrayPlugin::setShortServiceName(const QString & name)
+{d->shortName = name;}
+
 void SystrayPlugin::setServiceDescription( const QString & description )
 {
     d->description = description;
+}
+
+void SystrayPlugin::setShortStatus( ShortStatus status)
+{
+    if (!d->init) 
+        kDebug() << "Warning: Updating status on non-initialized plugin.";
+
+    d->serviceShortStatus = status;
+    emit shortStatusChanged(this, d->serviceShortStatus);
 }
 
 void SystrayPlugin::isServiceInitialized(const char * answerSlot) const
@@ -185,7 +201,6 @@ void SystrayPlugin::_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*
         answer = repl2.value();
     }
 
-    int fakeAnswer;
     if (!QMetaObject::invokeMethod(this,forwardSlot,Qt::DirectConnection, Q_ARG(bool,answer))) {
         kDebug() << "Forwarding call failed";
     }
@@ -201,10 +216,10 @@ bool SystrayPlugin::isServiceRegistered() const
         return false;
 }
 
-void SystrayPlugin::shortStatusRequest() const
+void SystrayPlugin::shortStatusUpdate() 
 {
     if (!isServiceRegistered()) {
-        emit shortStatusReply(NotStarted);
+        setShortStatus(NotStarted);
         return;
     }
 
@@ -215,18 +230,105 @@ void SystrayPlugin::shortStatusRequest() const
 
 void SystrayPlugin::_k_ssr_stage2(bool isInitialized)
 {
-    //kDebug() << "_k_ssr_stage2 called";
-    if (isInitialized) {
-        emit shortStatusReply(Running);
+    if (!isInitialized) {
+        setShortStatus(Failed);
+        return;
+    }
+
+    isServiceSuspended(SLOT(_k_ssr_stage3(QDBusPendingCallWatcher*)));
+
+}
+
+void SystrayPlugin::isServiceSuspended(const char * answerSlot)
+{
+    QDBusPendingCallWatcher * watcher = this->isServiceSuspendedRequest();
+    if ( watcher) { 
+        connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
+                this,answerSlot
+               );
+        return;
     }
     else {
-        emit shortStatusReply(Failed);
+        // Skip this step directly to _k_ssr_stage3
+        this->_k_ssr_stage3(0);
+        return;
     }
 }
 
-void SystrayPlugin::serviceStatusMessageRequest() const
+void SystrayPlugin::_k_ssr_stage3(QDBusPendingCallWatcher * watcher)
 {
-    emit serviceStatusMessageReply(QString());
+    if (watcher) {
+        // Only if watcher != NULL that means service claims to support 
+        // suspend functionality
+        QDBusPendingReply<bool> isSuspended = *watcher;
+        watcher->deleteLater();
+
+        if (!isSuspended.isValid()) {
+            // Failed
+            kDebug() << "Hasn't recieved reply from service. Error:" << isSuspended.error().message();
+            setShortStatus(Failed);
+            return;
+        }
+
+        bool answer;
+        answer = isSuspended.value();
+
+        if (answer) {
+            setShortStatus(Suspended);
+            return;
+        }
+    }
+
+    // Check for idle
+    isServiceRunning(SLOT(_k_ssr_stage4(QDBusPendingCallWatcher*)));
+}
+
+void SystrayPlugin::isServiceRunning(const char * answerSlot)
+{
+    QDBusPendingCallWatcher * watcher = this->isServiceRunningRequest();
+    if (watcher) {
+        connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
+                this,answerSlot
+               );
+    }
+    else {
+        this->_k_ssr_stage4(0);
+        return;
+    }
+}
+
+void SystrayPlugin::_k_ssr_stage4(QDBusPendingCallWatcher * watcher)
+{
+    if (watcher) {
+        QDBusPendingReply<bool> isIndexing = *watcher;
+        watcher->deleteLater();
+        // Running, but may be idle
+        if (!isIndexing.isValid()) {
+            // Error. Probably hung
+            setShortStatus(Failed);
+            return;
+        }
+        else {
+            bool answer = isIndexing.value();
+            if ( answer ) {
+                // Indexing
+                setShortStatus(Running);
+                return;
+            }
+            
+            setShortStatus(Idle);
+            return ;
+        }
+    }
+    else {
+        setShortStatus(Running);
+        return;
+    }
+}
+
+void SystrayPlugin::serviceStatusMessageUpdate() 
+{
+    emit statusMessageChanged(const_cast<SystrayPlugin*>(this),QString());
 }
 
 QString SystrayPlugin::dbusServiceName() const
@@ -237,24 +339,24 @@ QString SystrayPlugin::dbusServiceAddress() const
 
 void SystrayPlugin::_k_serviceRegistered()
 {
+    setShortStatus(NotStarted);
     this->serviceRegistered();
 }
 
 void SystrayPlugin::_k_serviceUnregistered()
 {
+    setShortStatus(NotStarted);
     this->serviceUnregistered();
 }
 
 void SystrayPlugin::_k_serviceOwnerChanged()
 {
+    setShortStatus(NotStarted);
     this->serviceOwnerChanged();
 }
 
 void SystrayPlugin::serviceSystemStatusChanged()
-{
-    shortStatusRequest();
-    if (this->hasStatusMessage())
-        this->serviceStatusMessageRequest();
+{;
 }
 
 QString SystrayPlugin::shortStatusToString(ShortStatus status)

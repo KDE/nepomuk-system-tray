@@ -73,11 +73,11 @@ void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
     disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
             this,SLOT(doInit(Nepomuk::SystrayPlugin*))
            );
-    connect(plugin,SIGNAL(shortStatusReply(Nepomuk::SystrayPlugin::ShortStatus)),
-            this,SLOT(onShortStatusChanged(Nepomuk::SystrayPlugin::ShortStatus))
+    connect(plugin,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
+            this,SLOT(onShortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus))
            );
-    connect(plugin,SIGNAL(serviceStatusMessageReply(QString)),
-            this,SLOT(onStatusMessageChanged(QString))
+    connect(plugin,SIGNAL(statusMessageChanged(Nepomuk::SystrayPlugin*,QString)),
+            this,SLOT(onStatusMessageChanged(Nepomuk::SystrayPlugin*,QString))
            );
 
     // Handle some constant parameters - name of service, menu etc
@@ -90,20 +90,23 @@ void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
         kDebug() << "Failed to retrieve menu";
         this->actionsButton->setEnabled(false);
     }
+    else if (actionsMenu->isEmpty() ) {
+        this->actionsButton->setEnabled(false);
+    }
     else {
         this->actionsButton->setMenu(actionsMenu);
         this->actionsButton->setEnabled(true);
     }
 
-    plugin->shortStatusRequest();
+    this->statusLabel->setText(SystrayPlugin::shortStatusToString(plugin->shortStatus()));
 }
 
-void SystrayServiceWidget::onShortStatusChanged(SystrayPlugin::ShortStatus status)
+void SystrayServiceWidget::onShortStatusChanged(SystrayPlugin* plugin, SystrayPlugin::ShortStatus status)
 {
     this->statusLabel->setText(SystrayPlugin::shortStatusToString(status));
 }
 
-void SystrayServiceWidget::onStatusMessageChanged(QString message)
+void SystrayServiceWidget::onStatusMessageChanged(Nepomuk::SystrayPlugin*,QString message)
 {
 }
 

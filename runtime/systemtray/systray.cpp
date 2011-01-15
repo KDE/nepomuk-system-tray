@@ -62,7 +62,7 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
 
     /* Add some basic actions */
     KAction* configAction = new KAction( this );
-    configAction->setText( i18n( "Configure System tray" ) );
+    configAction->setText( i18n( "Configure Nepomuk" ) );
     configAction->setIcon( KIcon( "configure" ) );
     connect( configAction, SIGNAL( triggered() ),
              this, SLOT( slotConfigure() ) );
@@ -127,7 +127,7 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
     kDebug() << "Plugin: " << plugin->objectName() << " finish initialization";
     Q_ASSERT(m_pluginsCurrentlyInitializing > 0);
     this->m_pluginsCurrentlyInitializing -= 1;
-    kDebug() << "plugins uninitialized left: " << m_pluginsCurrentlyInitializing;
+    //kDebug() << "plugins uninitialized left: " << m_pluginsCurrentlyInitializing;
     // To prevent situations when user will send second pluginIntialized signal
     // Unfortunately this works only if plugin is in the same thread as SystemTray
     disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
@@ -147,16 +147,14 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
     m_factory->addClient(plugin);
 
     // Assign index and add current status to the cache
-    connect(plugin,SIGNAL(shortStatusReply(Nepomuk::SystrayPlugin::ShortStatus)),
-            this,SLOT(updateToolTip(Nepomuk::SystrayPlugin::ShortStatus))
+    connect(plugin,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
+            this,SLOT(updateToolTip(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus))
             );
     m_pluginsIndexes[plugin] = m_statusCache.size();
-    m_statusCache.append(QString());
+    m_statusCache.append(SystrayPlugin::shortStatusToString(plugin->shortStatus()));
 
    // Add it to the main widget
    m_mainWidget->addPlugin(plugin);
-
-   plugin->shortStatusRequest();
 
    if ( m_pluginsCurrentlyInitializing == 0)
        finishOurInitialization();
@@ -164,7 +162,7 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
 
 void Nepomuk::SystemTray::finishOurInitialization()
 {
-    kDebug() << "Finishing our initialization";
+    //kDebug() << "Finishing our initialization";
     // Adding all submenus
     /*
     foreach( QAction * m, this->actions)
@@ -188,14 +186,9 @@ void Nepomuk::SystemTray::finishOurInitialization()
 
 }
 
-void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin::ShortStatus status)
+void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin, Nepomuk::SystrayPlugin::ShortStatus status)
 {
     
-    Nepomuk::SystrayPlugin * plugin = qobject_cast<Nepomuk::SystrayPlugin*>(sender());
-    if (!plugin) {
-        kDebug() << "Recived signal not from plugin";
-        return;
-    }
 
     kDebug() << "Plugin " << plugin->objectName() << "changed status to " << SystrayPlugin::shortStatusToString(status);
 

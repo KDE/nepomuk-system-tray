@@ -45,10 +45,7 @@ namespace Nepomuk
      *    anything. This is done just to prevent logic erros.
      *  - doInit. In this method you should do all D-Bus related initialization.
      * Methods you should implement:
-     *  - shortStatus. Report short status of the service. Default can distinguish between
-     *    limited states
-     *  - statusMessage. Return text describing status of the service. Default 
-     *    implementation return empty string.
+     *  - isServiceRunningRequest
      * Signals you should emit:
      *  - shortStatusChanged - emit when short status is changed
      *  - statusMessageChanged - emit when status message is changed. 
@@ -152,14 +149,14 @@ namespace Nepomuk
              Q_ENUMS(ShortStatus);
 
              /*! \brief This method returns the short status of the service
-              * If you service supports more statuses then select the most appropriate one. <b>Do not return
-              * statuses not from ShortStatus.</b>
-              * You <b>must</b> implement this method. It is vital!
-              * Default implementation can only distinguish between Running, NotStarted
-              * and Failed states
-              * Result should be return with shortStatusReply signal
+              * Return short status of the service
               */
-             virtual void shortStatusRequest() const;
+             ShortStatus shortStatus() const;
+
+             /*! \brief This function updates short status of the service
+              * The result will be available only with next shortStatusChanged signal
+              */
+             virtual void shortStatusUpdate();
 
              /*! \brief Return the arbitrary service status description
               * This is the method where you can use all status messages you wan't to use.
@@ -175,7 +172,7 @@ namespace Nepomuk
               *
               * \sa shortStatus()
               */
-             virtual void serviceStatusMessageRequest() const;
+             virtual void serviceStatusMessageUpdate() ;
 
 
              /*! \brief Return the service error message
@@ -220,11 +217,11 @@ namespace Nepomuk
          Q_SIGNALS:
              /*! \brief Emit this signal when you short status has changed
               */
-             //void shortStatusChanged(Nepomuk::SystrayPlugin *);
+             void shortStatusChanged(Nepomuk::SystrayPlugin *, Nepomuk::SystrayPlugin::ShortStatus );
 
              /*! \brief Emit this signal when your status message or error message has changed
               */
-             //void statusMessageChanged(Nepomuk::SystrayPlugin*);
+             void statusMessageChanged(Nepomuk::SystrayPlugin*, QString);
 
              /*! \brief This signal is for system use. 
               * It is automatically emited when plugin finish initialization.
@@ -235,11 +232,11 @@ namespace Nepomuk
 
              /*! \brief This signal emited with reply about short status of the service
               */
-             void shortStatusReply( Nepomuk::SystrayPlugin::ShortStatus status) const;
+             //void shortStatusReply( Nepomuk::SystrayPlugin::ShortStatus status) const;
 
              /*! \brief This signal emited with reply for the request about service status message
               */
-             void serviceStatusMessageReply( QString statusMessage ) const;
+             //void serviceStatusMessageReply( QString statusMessage ) const;
          protected Q_SLOTS:
              /*! \brief This slot is called when service is initialized
               * Default implementation will call serviceSystemStatusChanged()
@@ -288,6 +285,12 @@ namespace Nepomuk
               */
              void setShortServiceName(const QString & );
 
+
+             /*! \brief Set new short status of the service and emit necessary signals
+              */
+             void setShortStatus(ShortStatus status);
+
+
              /*! \brief Return true if service was initialized
               * Checks that endpoint exist and return true if service is initialized
               * answerSlot will be called with given signal. Slot must have a signature
@@ -305,13 +308,33 @@ namespace Nepomuk
               * <b>DO NOT SEND ANY SIGNALS FROM HERE</b>
               */
              virtual void doInit() = 0;
+
+             /*! \brief Return a reply for the request about whether service is suspended
+              * Return 0 if you don't support this functionality.
+              * Default implementation will return 0;
+              */
+             virtual QDBusPendingCallWatcher * isServiceSuspendedRequest()
+             {return 0;}
+
+             /*! \brief Return a reply for the request about whether service is suspended
+              * Return 0 if you don't support this functionality.
+              * Default implementation will return 0;
+              */
+             virtual QDBusPendingCallWatcher * isServiceRunningRequest()
+             {return 0;}
+
+            void isServiceRunning(const char*);
+            void isServiceSuspended(const char*);
+
         private Q_SLOTS:
             void _k_serviceRegistered();
             void _k_serviceUnregistered();
             void _k_serviceOwnerChanged();
             void _k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*);
             void _k_performInit();
-            void _k_ssr_stage2(bool isInitialized);
+            void _k_ssr_stage2(bool);
+            void _k_ssr_stage3(QDBusPendingCallWatcher*);
+            void _k_ssr_stage4(QDBusPendingCallWatcher*);
 
         private:
              //void updateControlInterface();
