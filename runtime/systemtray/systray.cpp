@@ -38,6 +38,7 @@
 #include <QtGui/QAction>
 #include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>
+#include <QtCore/QTimer>
 
 
 
@@ -85,6 +86,8 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     m_mainWidget = new MainWidget(m_factory);
 
     setAssociatedWidget( m_mainWidget );
+
+    m_timer = 0;
 }
 
 
@@ -184,6 +187,22 @@ void Nepomuk::SystemTray::finishOurInitialization()
     // Set tooltip
     buildToolTip();
 
+    // Start timer
+    KConfigGroup group = KGlobal::config()->group("main");
+    int defaultInterval = 5000;
+    m_updateInterval = group.readEntry("updateInterval",defaultInterval);
+    if (m_updateInterval < 1000 ) {
+        m_updateInterval = 5000;
+    }
+
+    m_timer = new QTimer();
+    m_timer->setInterval(m_updateInterval);
+    connect(m_timer,SIGNAL(timeout()),
+            this,SLOT(updateStatuses())
+           );
+    m_timer->setSingleShot(false);
+    m_timer->start();
+
 }
 
 void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin, Nepomuk::SystrayPlugin::ShortStatus status)
@@ -206,3 +225,12 @@ void Nepomuk::SystemTray::buildToolTip()
     this->setToolTipSubTitle(m_statusCache.join("\n"));
 }
 
+void Nepomuk::SystemTray::updateStatuses()
+{
+    QHash<SystrayPlugin*,int>::const_iterator it = m_pluginsIndexes.constBegin();
+    QHash<SystrayPlugin*,int>::const_iterator it_end = m_pluginsIndexes.constEnd();
+    for(; it!= it_end; it++)
+    {
+        it.key()->shortStatusUpdate();
+    }
+}

@@ -30,3 +30,7 @@ install( TARGETS nepomukcontroller ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 install(FILES nepomukcontrollerui.rc 
            DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 
+install (
+    FILES nepomukcontrollerrc DESTINATION ${CONFIG_INSTALL_DIR}
+    )
+

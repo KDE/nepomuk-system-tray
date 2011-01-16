@@ -29,6 +29,7 @@
 #include "systrayplugin.h"
 
 class QAction;
+class QTimer;
 class KDualAction;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
@@ -48,6 +49,7 @@ namespace Nepomuk {
             void slotConfigure();
             void pluginInitialized(Nepomuk::SystrayPlugin*);
             void updateToolTip(Nepomuk::SystrayPlugin * ,Nepomuk::SystrayPlugin::ShortStatus);
+            void updateStatuses();
 
         Q_SIGNALS:
             // This signal is used to react on plugin::shortStatusChanged signal
@@ -76,6 +78,8 @@ namespace Nepomuk {
             QHash<SystrayPlugin*,int> m_pluginsIndexes;
             QStringList m_statusCache;
             MainWidget * m_mainWidget;
+            QTimer * m_timer;
+            int m_updateInterval;
 
     };
 }
