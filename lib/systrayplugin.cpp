@@ -43,7 +43,6 @@ class SystrayPlugin::Private
         QStringList actionNamesCache;
         bool init;
         ShortStatus serviceShortStatus;
-        //static OrgKdeNepomukServiceManagerInterface * mainServer();
 };
 
 SystrayPlugin::SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString dbusServiceName, QObject * parent):
@@ -118,11 +117,6 @@ SystrayPlugin::~SystrayPlugin()
 }
 
 
-#if 0
-KActionMenu * SystrayPlugin::menu() const
-{ return (this->actions() == 0)?0:this->actions()->menu(); }
-#endif
-
 QString SystrayPlugin::serviceName() const
 {
     return d->name;
@@ -159,29 +153,6 @@ void SystrayPlugin::setShortStatus( ShortStatus status)
     emit shortStatusChanged(this, d->serviceShortStatus);
 }
 
-#if 0
-void SystrayPlugin::_k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher* reply)
-{
-    //kDebug() << "Called _k_isServiceInitializedReplyHandler";
-    QByteArray tmpString = reply->property("_k_forwardSlot").toString().toAscii();
-    const char * forwardSlot = tmpString.data(); 
-    //kDebug() << "Forward slot is: " << forwardSlot;
-    bool answer;
-    QDBusPendingReply<bool> repl2 = *reply;
-    if (!repl2.isValid()) {
-        kDebug() << "Hasn't recieved reply from service. Error:" << repl2.error().message();
-        answer = false;
-    }
-    else {
-        answer = repl2.value();
-    }
-
-    if (!QMetaObject::invokeMethod(this,forwardSlot,Qt::DirectConnection, Q_ARG(bool,answer))) {
-        kDebug() << "Forwarding call failed";
-    }
-    reply->deleteLater();
-}
-#endif
 
 bool SystrayPlugin::isServiceRegistered() const
 {
@@ -212,8 +183,6 @@ void SystrayPlugin::isServiceInitialized(const char * answerSlot) const
     QDBusPendingReply<bool> repl2 = d->controlInterface->isInitialized();
     QDBusPendingCallWatcher * watcher = new QDBusPendingCallWatcher(repl2,0);
 
-    // Add answerSlot as dynamic proprety
-    //watcher->setProperty("_k_forwardSlot",QVariant(answerSlot));
 
     connect(watcher,SIGNAL(finished(QDBusPendingCallWatcher*)),
             this,answerSlot
@@ -263,7 +232,7 @@ void SystrayPlugin::_k_ssr_stage3(QDBusPendingCallWatcher * watcher)
 
         if (!isSuspended.isValid()) {
             // Failed
-            kDebug() << "Hasn't recieved reply from service. Error:" << isSuspended.error().message();
+            kDebug() << "Hasn't received reply from service. Error:" << isSuspended.error().message();
             setShortStatus(Failed);
             return;
         }
@@ -360,22 +329,6 @@ void SystrayPlugin::serviceSystemStatusChanged()
 void SystrayPlugin::callWithNull(const char * answerSlot) const
 {
     QTimer::singleShot(0,const_cast<SystrayPlugin*>(this),answerSlot);
-#if 0
-    // Actually Qt-dependend hack
-    const char * slotSignature = answerSlot +1;
-    int methodIndex = this->metaObject()->indexOfMethod(slotSignature);
-    if (methodIndex == -1) {
-        kDebug() << "Can't found method: " << answerSlot;
-        return;
-    }
-    QMetaMethod method = this->metaObject()->method(methodIndex);
-    method.invoke(
-            const_cast<SystrayPlugin*>(this),
-            Qt::QueuedConnection,
-            Q_ARG(QDBusPendingCallWatcher *,0)
-            );
-    return;
-#endif
 }
 
 QString SystrayPlugin::shortStatusToString(ShortStatus status)

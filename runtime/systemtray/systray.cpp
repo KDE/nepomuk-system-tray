@@ -138,14 +138,6 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
               );
     // We connect plugin's signal shortStatusChanged with plugin's slot
     // shortStatusRequest through our proxy signal because it is correct way.
-#if 0
-    connect(plugin,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*)),
-            this,SIGNAL(mirrorSignal())
-           );
-    connect(this,SIGNAL(mirrorSignal()),
-            plugin,SLOT(shortStatusRequest())
-           );
-#endif
     // Add it to the factory
     m_factory->addClient(plugin);
 
@@ -166,14 +158,6 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
 void Nepomuk::SystemTray::finishOurInitialization()
 {
     //kDebug() << "Finishing our initialization";
-    // Adding all submenus
-    /*
-    foreach( QAction * m, this->actions)
-    {
-       this->menu->addAction(m);
-    }
-    this->actions.clear();
-    */
 
     QWidget * w = m_factory->container("trayMenu",this);
     KMenu * trayMenu = qobject_cast<KMenu*>(w);
