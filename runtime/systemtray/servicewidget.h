@@ -34,7 +34,7 @@ namespace  Nepomuk {
     {
         Q_OBJECT;
         public:
-            SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactory * factory = 0, QWidget * parent = 0);
+            explicit SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactory * factory = 0, QWidget * parent = 0);
         public Q_SLOTS:
             void setShown(bool);
         private Q_SLOTS:

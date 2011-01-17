@@ -32,7 +32,7 @@ namespace Nepomuk {
     {
         Q_OBJECT;
         public:
-            MainWidget(KXMLGUIFactory * factory, QWidget * parent = 0);
+            explicit MainWidget(KXMLGUIFactory * factory, QWidget * parent = 0);
             void addPlugin( SystrayPlugin * plugin);
         private:
             QVBoxLayout * m_pluginLayout;

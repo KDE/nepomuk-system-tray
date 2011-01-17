@@ -4,5 +4,5 @@ Comment=System tray icon to control the behaviour of the Nepomuk services
 Icon=nepomuk
 Exec=nepomukcontroller
 Type=Application
-Categories=Qt;KDE;
+Categories=Qt;KDE;Utility;Monitor;
 X-DBUS-StartupType=Unique

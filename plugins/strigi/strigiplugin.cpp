@@ -167,7 +167,7 @@ void StrigiSystrayPlugin::_k_ua_stage3(QDBusPendingCallWatcher * watcher)
     if (!isSuspended.isValid() ) { 
         // error. Probaly hungs
         d->srAction->setEnabled(false);
-        kDebug() << "Checking for suspend. Failed to recieve reply from service.\
+        kDebug() << "Checking for suspend. Failed to receive reply from service.\
             Error: " << isSuspended.error().message();
         return;
     }
