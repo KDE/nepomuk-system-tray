@@ -38,6 +38,12 @@ namespace Nepomuk
             virtual bool userOriented() const { return true; }
         protected:
             virtual void doInit();
+            /*! \brief Special method that is called by default when D-Bus status of the service is changed
+             * This method is called by \fn serviceRegistered , \fn serviceUnregistered
+             * \fn serviceOwnerChanged 
+             * when service is registered, unregistered and so on.
+             * You can implement this method or reimplement the above methods.
+             */
             void serviceSystemStatusChanged();
             QDBusPendingCallWatcher * isServiceSuspendedRequest();
             QDBusPendingCallWatcher * isServiceRunningRequest();
@@ -45,14 +51,18 @@ namespace Nepomuk
         protected Q_SLOTS:
 
             virtual void serviceInitialized(bool);
+            virtual void serviceRegistered()
+            { this->serviceSystemStatusChanged(); }
+            virtual void serviceUnregistered() 
+            { this->serviceSystemStatusChanged(); }
              
             void updateActions();
         private Q_SLOTS:
             void slotSuspend(bool);
             
             // Pipeline for updateActions
-            void _k_ua_stage2(QDBusPendingCallWatcher * = 0);
-            void _k_ua_stage3(QDBusPendingCallWatcher* = 0);
+            //void _k_ua_stage2(QDBusPendingCallWatcher * = 0);
+            //void _k_ua_stage3(QDBusPendingCallWatcher* = 0);
         private:
             class Private;
             Private * const  d;

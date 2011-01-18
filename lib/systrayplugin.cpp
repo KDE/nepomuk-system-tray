@@ -322,10 +322,6 @@ void SystrayPlugin::_k_serviceOwnerChanged()
     this->serviceOwnerChanged();
 }
 
-void SystrayPlugin::serviceSystemStatusChanged()
-{;
-}
-
 void SystrayPlugin::callWithNull(const char * answerSlot) const
 {
     QTimer::singleShot(0,const_cast<SystrayPlugin*>(this),answerSlot);

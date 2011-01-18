@@ -285,33 +285,32 @@ namespace Nepomuk
              virtual void serviceInitialized(bool) = 0;
 
              /*! \brief This slot is called when D-Bus enpoind appears
-              * Default implementation will call serviceSystemStatusChanged()
-              * You may wish to implement it
+              * Default implementation will do nothing. But, before this method
+              * will be called, shortStatus will be set to the Launching. 
+              * You may wish to implement it if you need to do something on
+              * service startup or you want to set another status.
               */
              virtual void serviceRegistered()
-             { this->serviceSystemStatusChanged(); }
+             { ; }
              
              /*! \brief This slot is called when D-Bus endpoint disappear
-              * Default implementation will call serviceSystemStatusChanged()
-              * You may wish to implement it
+              * Default implementation will call do nothing. Behaviour
+              * is like \fn serviceRegistered, but NotStarted will be set
+              * as status befor this function call.
+              * You may wish to implement it for the same reasons as serviceRegistered
               */
              virtual void serviceUnregistered() 
-             { this->serviceSystemStatusChanged(); }
+             { ; }
 
              /*! \brief This function is called when owher of the service has changed
-              * Default implementation will call serviceSystemStatusChanged()
+              * Default implementation will do nothing.
+              * Currently this function won't be called because of undefined
+              * situation with Qt signals.
               * You may wish to implement it
               */
              virtual void serviceOwnerChanged()
-             { this->serviceSystemStatusChanged(); }
+             { ; }
 
-             /*! \brief Special method that is called by default when D-Bus status of the service is changed
-              * This method is called by \fn serviceRegistered , \fn serviceUnregistered
-              * \fn serviceOwnerChanged 
-              * when service is registered, unregistered and so on.
-              * You can implement this method or reimplement the above methods.
-              */
-             virtual void serviceSystemStatusChanged();
              
 
          protected:
@@ -374,6 +373,7 @@ namespace Nepomuk
              virtual QDBusPendingCallWatcher * isServiceRunningRequest()
              {return 0;}
 
+         private:
             /*! \brief This function checks that service is running and call given slot with result
              * Slot must have signature answerSlot(QDBusPendingCallWatcher * watchre = 0).
              *  If 

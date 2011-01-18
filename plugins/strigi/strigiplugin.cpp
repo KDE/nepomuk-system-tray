@@ -85,14 +85,15 @@ void StrigiSystrayPlugin::doInit()
             this);
 
     /* Connect necessary signals first */
-    /*
     connect(d->strigiInteface,SIGNAL(statusChanged()),
-            this,SLOT(serviceSystemStatusChanged()));
-            */
+            this,SLOT(shortStatusUpdate()));
 
-    connect(d->strigiInteface,SIGNAL(statusChanged()),
-            this,SLOT(updateActions()));
+    //connect(d->strigiInteface,SIGNAL(statusChanged()),
+    //        this,SLOT(updateActions()));
 
+    connect(this, SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
+            this, SLOT(updateActions())
+           );
     // We should connect signals that responsible for changing status message
     // here, but this subsystem is not ready
 
@@ -131,7 +132,26 @@ void StrigiSystrayPlugin::serviceSystemStatusChanged()
 
 void StrigiSystrayPlugin::updateActions()
 {
+    switch ( shortStatus() )
+    {
+        case ( NotStarted ):
+        case (Launching):
+        case (Failed): {d->srAction->setEnabled(false);break;}
+        case ( Idle ): 
+        case ( Running ) : { 
+                               d->srAction->setEnabled(true);
+                               d->srAction->setActive(false);
+                               break;
+                           }
+        case ( Suspended ) : {
+                               d->srAction->setEnabled(true);
+                               d->srAction->setActive(true);
+                               break;
+                           }
+        default : { kDebug() << "Unknow service status"; }
+    }
 
+#if 0
     d->srAction->setEnabled(false);
     if (!isServiceRegistered()) {
         kDebug() << "Service even doesn't exist( not registered)";
@@ -139,8 +159,10 @@ void StrigiSystrayPlugin::updateActions()
     }
 
     isServiceInitialized(SLOT(_k_ua_stage2(QDBusPendingCallWatcher*)));
+#endif
 }
 
+#if 0
 void StrigiSystrayPlugin::_k_ua_stage2(QDBusPendingCallWatcher * watcher)
 {
     if ( !watcher ) 
@@ -185,7 +207,7 @@ void StrigiSystrayPlugin::_k_ua_stage3(QDBusPendingCallWatcher * watcher)
 
     
 }
-
+#endif
 
 QDBusPendingCallWatcher * StrigiSystrayPlugin::isServiceSuspendedRequest()
 {
