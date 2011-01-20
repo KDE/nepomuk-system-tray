@@ -1,5 +1,5 @@
 
-add_subdirectory(kcm)
+#add_subdirectory(kcm)
 
 ## Add program
 set ( NST_SOURCES 
