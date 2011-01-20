@@ -1,5 +1,4 @@
 # Add library
-set( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
 
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
