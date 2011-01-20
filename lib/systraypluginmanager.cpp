@@ -81,5 +81,7 @@ SystrayPluginManager* SystrayPluginManager::self()
 }
 
 SystrayPluginManager::~SystrayPluginManager()
-{; }
+{ 
+   delete d; 
+}
 
