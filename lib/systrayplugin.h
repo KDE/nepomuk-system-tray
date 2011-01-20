@@ -29,8 +29,6 @@
 
 #include "nepomuksystray_export.h"
 class KAction;
-class KActionCollection;
-class KActionMenu;
 class QDBusPendingCallWatcher;
 class KDesktopFile;
 
