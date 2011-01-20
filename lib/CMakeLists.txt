@@ -30,6 +30,6 @@ target_link_libraries(nepomuk_systray
 install(TARGETS nepomuk_systray ${INSTALL_TARGETS_DEFAULT_ARGS} ) 
 install(
     FILES ${NSTL_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include 
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include  COMPONENT Devel
     )
     
