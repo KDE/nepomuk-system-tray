@@ -64,6 +64,11 @@ SystrayServiceWidget::SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactor
     }
 }
 
+SystrayServiceWidget::~SystrayServiceWidget()
+{
+    delete d;
+}
+
 void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
 {
     // It only works if we do not allow to change d->plugin in runtime
