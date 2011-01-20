@@ -22,11 +22,11 @@
 #include "servicecontrolinterface.h"
 
 #include <QDBusConnection>
-#include <QDBusConnectionInterface>
 #include <QDBusPendingCallWatcher>
 #include <KDebug>
 #include <KDesktopFile>
 #include <KLocale>
+#include <KAction>
 
 using namespace Nepomuk;
 

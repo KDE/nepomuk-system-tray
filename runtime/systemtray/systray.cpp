@@ -25,10 +25,9 @@
 #include <KApplication>
 #include <KGlobal>
 #include <KMenu>
-#include <KDualAction>
-#include <KActionMenu>
 #include <KLocale>
 #include <KIcon>
+#include <KAction>
 #include <KToolInvocation>
 #include <KActionCollection>
 #include <KXMLGUIFactory>
