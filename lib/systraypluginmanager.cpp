@@ -38,7 +38,7 @@ SystrayPluginManager::SystrayPluginManager():
     KService::List offers = KServiceTypeTrader::self()->query("NepomukSystray/Plugin");
  
     KService::List::const_iterator iter;
-    for(iter = offers.begin(); iter < offers.end(); ++iter)
+    for(iter = offers.constBegin(); iter < offers.constEnd(); ++iter)
     {
         QString error;
         KService::Ptr service = *iter;
