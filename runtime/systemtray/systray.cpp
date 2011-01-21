@@ -47,12 +47,12 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
 {
     setCategory( SystemServices );
     setStatus( Passive );
-    setIconByName( "nepomuk" );
+    setIconByName( QLatin1String("nepomuk") );
     setTitle( i18n( "Nepomuk Services" ) );
     //setStandardActionsEnabled( true );
     
     /* Init XMLGUI part */
-    QString xmlfile = KGlobal::mainComponent().componentName() + "ui.rc";
+    QString xmlfile = KGlobal::mainComponent().componentName() + QLatin1String("ui.rc");
     setXMLFile(xmlfile);
 
     // Passing 0 leads to some strange segfaults.
@@ -63,10 +63,10 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     /* Add some basic actions */
     KAction* configAction = new KAction( this );
     configAction->setText( i18n( "Configure Nepomuk" ) );
-    configAction->setIcon( KIcon( "configure" ) );
+    configAction->setIcon( KIcon( QLatin1String("configure") ) );
     connect( configAction, SIGNAL( triggered() ),
              this, SLOT( slotConfigure() ) );
-    KXMLGUIClient::actionCollection()->addAction("configNepomuk",configAction);
+    KXMLGUIClient::actionCollection()->addAction(QLatin1String("configNepomuk"),configAction);
 
     KStandardAction::quit(kapp, SLOT(quit()), KXMLGUIClient::actionCollection());
 
@@ -77,7 +77,7 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     loadPlugins();
 
 
-    setToolTipIconByName("nepomuk");
+    setToolTipIconByName(QLatin1String("nepomuk"));
     setToolTipTitle(i18n("Nepomuk"));
 
 
@@ -104,8 +104,8 @@ Nepomuk::SystemTray::~SystemTray()
 void Nepomuk::SystemTray::slotConfigure()
 {
     QStringList args;
-    args << "kcm_nepomuk";
-    KToolInvocation::kdeinitExec("kcmshell4", args);
+    args << QLatin1String("kcm_nepomuk");
+    KToolInvocation::kdeinitExec(QLatin1String("kcmshell4"), args);
 }
 
 
@@ -158,7 +158,7 @@ void Nepomuk::SystemTray::finishOurInitialization()
 {
     //kDebug() << "Finishing our initialization";
 
-    QWidget * w = m_factory->container("trayMenu",this);
+    QWidget * w = m_factory->container(QLatin1String("trayMenu"),this);
     KMenu * trayMenu = qobject_cast<KMenu*>(w);
     if (!trayMenu) {
         kError() << "Failed to retrieve menu";
@@ -205,7 +205,7 @@ void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin, Nepomuk
 void Nepomuk::SystemTray::buildToolTip()
 {
     //kDebug() << "ToolTip: " << m_statusCache.join("\n");
-    this->setToolTipSubTitle(m_statusCache.join("\n"));
+    this->setToolTipSubTitle(m_statusCache.join(QLatin1String("\n")));
 }
 
 void Nepomuk::SystemTray::updateStatuses()

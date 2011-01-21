@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
                           "http://nepomuk.kde.org" );
     aboutData.addAuthor(ki18n("Sebastian Trüg"),ki18n("Maintainer"), "trueg@kde.org");
     aboutData.addAuthor(ki18n("Serebriyskiy Artem"),ki18n("Maintainer"), "v.for.vandal@gmail.com");
-    aboutData.setProgramIconName( "nepomuk" );
+    aboutData.setProgramIconName( QLatin1String("nepomuk") );
 
     KCmdLineArgs::init( argc, argv, &aboutData );
     KCmdLineOptions options;

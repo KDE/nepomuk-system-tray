@@ -49,7 +49,7 @@ SystrayPlugin::SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString db
     QObject(parent),
     d(new Private())
 {
-    static QString dbusBase = NSERVICE_DBUS_NAME_PREFIX".%1";
+    static QString dbusBase = QLatin1String(NSERVICE_DBUS_NAME_PREFIX".%1");
     d->init = false;
     d->name = serviceDesktopFile.readName();;
     d->shortName = d->name;
@@ -72,7 +72,7 @@ void SystrayPlugin::_k_performInit()
         // Trying to create service control interface
         d->controlInterface = new OrgKdeNepomukServiceControlInterface(
                 d->dbusServiceAddress,
-                NEPOMUK_SERVICECONTROL_PATH,
+                QLatin1String(NEPOMUK_SERVICECONTROL_PATH),
                 QDBusConnection::sessionBus(),
                 this);
 

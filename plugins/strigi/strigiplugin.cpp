@@ -46,16 +46,16 @@ class StrigiSystrayPlugin::Private
 
 StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>&):
     SystrayPlugin(
-            KDesktopFile("services","nepomukstrigiservice.desktop")
-            ,"nepomukstrigiservice",
+            KDesktopFile("services",QLatin1String("nepomukstrigiservice.desktop"))
+            ,QLatin1String("nepomukstrigiservice"),
             parent),
     d(new Private())
 {
     /* Init XMLGUI part */
-    setXMLFile("systraystrigipluginui.rc");
+    setXMLFile(QLatin1String("systraystrigipluginui.rc"));
 
     /* Init service and actions */
-    this->setServiceDescription("Indexes files");
+    this->setServiceDescription(i18n("Indexes files"));
     /* Init menu */
     this->d->srAction = new KDualAction(0);
     d->srAction->setActiveGuiItem( KGuiItem( i18n( "Resume File Indexing" ) ) );
@@ -64,7 +64,7 @@ StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>
     connect( d->srAction, SIGNAL( activeChangedByUser( bool ) ),
              this, SLOT( slotSuspend( bool ) ) );
 
-    actionCollection()->addAction("suspresStrigi",d->srAction);
+    actionCollection()->addAction(QLatin1String("suspresStrigi"),d->srAction);
     /*
     d->actions = new KActionCollection(this);
     d->menu = new KActionMenu(i18n("Strigi File Indexer"),this);
@@ -80,7 +80,7 @@ StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>
 void StrigiSystrayPlugin::doInit()
 {
     d->strigiInteface = new OrgKdeNepomukStrigiInterface(dbusServiceAddress(), 
-            '/' + dbusServiceName(),
+            QLatin1Char('/') + dbusServiceName(),
             QDBusConnection::sessionBus(),
             this);
 

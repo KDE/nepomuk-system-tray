@@ -39,13 +39,13 @@ class @_dbusname@SystrayPlugin::Private
 
 @_dbusname@SystrayPlugin::@_dbusname@SystrayPlugin( QObject * parent,const QList<QVariant>&):
     SystrayPlugin(
-            KDesktopFile("services","@_servicedesktopfile@"),
-            "@_dbusname@",
+            KDesktopFile("services",QLatin1String("@_servicedesktopfile@")),
+            QLatin1String("@_dbusname@"),
             parent),
     d(new Private())
 {
     /* Init XMLGUI part */
-    setXMLFile("systray@_dbusname@pluginui.rc");
+    setXMLFile(QLatin1String("systray@_dbusname@pluginui.rc"));
 
     /* Init service and actions */
     //this->setServiceDescription("@_service_description@");
