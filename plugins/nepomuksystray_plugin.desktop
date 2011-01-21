@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=NepomukSystray/Plugin
 Name=Nepomuk System Tray Plugin
-Name[x-test]=xxNepomuk System Tray Pluginxx
 
 [PropertyDef::X-KDE-PluginInfo-Name]
 Type=QString
