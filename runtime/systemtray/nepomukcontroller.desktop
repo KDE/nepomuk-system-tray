@@ -1,5 +1,11 @@
 [Desktop Entry]
 Name=Nepomuk Services Controller
+Name[en_GB]=Nepomuk Services Controller
+Name[pt]=Controlador dos Serviços do Nepomuk
+Name[pt_BR]=Controlador dos serviços do Nepomuk
+Name[sv]=Nepomuk tjänststyrning
+Name[uk]=Керування службами Nepomuk
+Name[x-test]=xxNepomuk Services Controllerxx
 Comment=System tray icon to control the behavior of the Nepomuk services
 Icon=nepomuk
 Exec=nepomukcontroller

@@ -4,6 +4,18 @@ X-KDE-ServiceTypes=NepomukSystray/Plugin
 X-KDE-Library=nepomuksystray_strigi
 X-KDE-PluginInfo-Name=strigi_basic
 Name=Strigi system tray plugin
+Name[en_GB]=Strigi system tray plugin
+Name[pt]='Plugin' da bandeja do sistema para o Strigi
+Name[pt_BR]=Plug-in da área de notificação para o Strigi
+Name[sv]=Strigi insticksprogram för systembrickan
+Name[uk]=Додаток системного лотка Strigi
+Name[x-test]=xxStrigi system tray pluginxx
 Comment=Plugin for the Nepomuk system tray that controls the Strigi service
+Comment[en_GB]=Plugin for the Nepomuk system tray that controls the Strigi service
+Comment[pt]='Plugin' da bandeja do Nepomuk para controlar o serviço do Strigi
+Comment[pt_BR]=Plug-in da área de notificação para controlar o serviço do Strigi
+Comment[sv]=Insticksprogram för Nepomuks systembricka som styr Strigi-tjänsten
+Comment[uk]=Додаток до піктограми системного лотка Nepomuk для керування службою Strigi
+Comment[x-test]=xxPlugin for the Nepomuk system tray that controls the Strigi servicexx
 
 
