@@ -106,6 +106,12 @@ void SystrayPlugin::_k_performInit()
     }
 }
 
+void SystrayPlugin::update()
+{
+    this->shortStatusUpdate();
+    this->serviceStatusMessageUpdate();
+}
+
 bool SystrayPlugin::isInitialized() const
 {
     return d->init;

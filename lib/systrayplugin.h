@@ -200,28 +200,14 @@ namespace Nepomuk
               */
              ShortStatus shortStatus() const;
 
-             /*! \brief This function updates short status of the service
-              * The signal shortStatusChanged with current status will be 
+             /*! \brief This function will update status and status message of the service
+              * The signals shortStatusChanged and statusMessageChanged with current 
+              * status and current status messages will be 
               * emitted as the  result of the operation. This function is not expensive,
               * but can take some time to execute. It is build in the async manner.
               */
-             virtual void shortStatusUpdate();
+             void update();
 
-             /*! \brief Return the arbitrary service status description
-              * This is the method where you can use all status messages you wan't to use.
-              * But be aware that if shortStatus if the service is NotStarted 
-              * status string wouldn't be shown.
-              * If service doesn't have status message, return null or empty QString
-              * If service has an error and you don't have a message for this error,
-              * you should return null or empty string.
-              * Default implemntation will return Null string and will do it 
-              * <b>synchroniously</b>. Be aware of deadlocks. You should rather
-              * check hasStatusMessage() before using this method
-              * Result should be returned with statusMessageChanged signal.
-              *
-              * \sa shortStatus()
-              */
-             virtual void serviceStatusMessageUpdate() ;
 
 
              virtual ~SystrayPlugin();
@@ -373,6 +359,29 @@ namespace Nepomuk
              virtual QDBusPendingCallWatcher * isServiceRunningRequest()
              {return 0;}
 
+             /*! \brief This function updates short status of the service
+              * This function has to update the short status of the service and 
+              * emint shortStatusChanged signal with new status. You can overload
+              * it if you want, but default implementation is good enough.
+              * If you implement it, then you <b>have to</b> make it asyncronious.
+              */
+             virtual void shortStatusUpdate();
+
+             /*! \brief Return the arbitrary service status description
+              * This is the method where you can use all status messages you wan't to use.
+              * But be aware that if shortStatus if the service is NotStarted 
+              * status string wouldn't be shown.
+              * If service doesn't have status message, return null or empty QString
+              * If service has an error and you don't have a message for this error,
+              * you should return null or empty string.
+              * Default implemntation will return Null string and will do it 
+              * <b>synchroniously</b>. Be aware of deadlocks. You should rather
+              * check hasStatusMessage() before using this method
+              * Result should be returned with statusMessageChanged signal.
+              *
+              * \sa shortStatus()
+              */
+             virtual void serviceStatusMessageUpdate();
          private:
             /*! \brief This function checks that service is running and call given slot with result
              * Slot must have signature answerSlot(QDBusPendingCallWatcher * watchre = 0).
