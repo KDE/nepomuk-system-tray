@@ -12,6 +12,7 @@ Name[pt_BR]=Plug-in da área de notificação para o Nepomuk
 Name[sv]=Nepomuk insticksprogram för systembrickan
 Name[uk]=Додаток системного лотка Nepomuk
 Name[x-test]=xxNepomuk System Tray Pluginxx
+Name[zh_TW]=Nepomuk 系統匣外掛程式
 
 [PropertyDef::X-KDE-PluginInfo-Name]
 Type=QString

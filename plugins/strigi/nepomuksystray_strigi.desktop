@@ -14,6 +14,7 @@ Name[pt_BR]=Plug-in da área de notificação para o Strigi
 Name[sv]=Strigi insticksprogram för systembrickan
 Name[uk]=Додаток системного лотка Strigi
 Name[x-test]=xxStrigi system tray pluginxx
+Name[zh_TW]=Strigi 系統匣外掛程式
 Comment=Plugin for the Nepomuk system tray that controls the Strigi service
 Comment[en_GB]=Plugin for the Nepomuk system tray that controls the Strigi service
 Comment[es]=Complemento de la bandeja del sistema para Nepomuk que controla el servicio de Strigi
@@ -24,5 +25,6 @@ Comment[pt_BR]=Plug-in da área de notificação para controlar o serviço do St
 Comment[sv]=Insticksprogram för Nepomuks systembricka som styr Strigi-tjänsten
 Comment[uk]=Додаток до піктограми системного лотка Nepomuk для керування службою Strigi
 Comment[x-test]=xxPlugin for the Nepomuk system tray that controls the Strigi servicexx
+Comment[zh_TW]=控制 Strigi 服務的 Nepomuk 系統匣外掛程式
 
 
