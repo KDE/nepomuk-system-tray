@@ -2,6 +2,7 @@
 Type=ServiceType
 X-KDE-ServiceType=NepomukSystray/Plugin
 Name=Nepomuk System Tray Plugin
+Name[da]=Statusområde-plugin til Nepomuk
 Name[en_GB]=Nepomuk System Tray Plugin
 Name[es]=Complemento de la bandeja del sistema para Nepomuk
 Name[fr]=Module externe Nepomuk pour la boîte à miniatures

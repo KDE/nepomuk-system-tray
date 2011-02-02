@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Nepomuk Services Controller
+Name[da]=Styring af Nepomuk-tjenester
 Name[en_GB]=Nepomuk Services Controller
 Name[es]=Controlador de servicios de Nepomuk
 Name[fr]=Contrôleur de services Nepomuk
@@ -11,6 +12,8 @@ Name[uk]=Керування службами Nepomuk
 Name[x-test]=xxNepomuk Services Controllerxx
 Name[zh_TW]=Nepomuk 服務控制器
 Comment=System tray icon to control the behavior of the Nepomuk services
+Comment[da]=Statusikon til at kontrollere Nepomuk-tjenesters opførsel
+Comment[en_GB]=System tray icon to control the behaviour of the Nepomuk services
 Comment[es]=Icono de la bandeja del sistema para controlar el comportamiento de los servicios de Nepomuk
 Comment[fr]=Icône de la boîte à miniatures pour contrôler le comportement des services Nepomuk
 Comment[nl]=Systeemvakpictogram voor de besturing van het gedrag van de Nepomuk-services
