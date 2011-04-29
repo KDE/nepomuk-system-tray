@@ -13,8 +13,8 @@ set ( NSTL_HEADERS
     nepomuksystray_export.h
     )
 
-qt4_add_dbus_interface(NSTL_SOURCES ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.nepomuk.ServiceManager.xml servicemanagerinterface)
-qt4_add_dbus_interface(NSTL_SOURCES ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.nepomuk.ServiceControl.xml servicecontrolinterface)
+qt4_add_dbus_interface(NSTL_SOURCES ${kde-runtime_DBUS_DIR}/org.kde.nepomuk.ServiceManager.xml servicemanagerinterface)
+qt4_add_dbus_interface(NSTL_SOURCES ${kde-runtime_DBUS_DIR}/org.kde.nepomuk.ServiceControl.xml servicecontrolinterface)
 
 kde4_add_library( nepomuk_systray SHARED ${NSTL_SOURCES})
 target_link_libraries(nepomuk_systray
