@@ -29,7 +29,7 @@
 int main( int argc, char *argv[] )
 {
     KAboutData aboutData( "nepomukcontroller",
-                          "nepomukcontroller",
+                          "nepomuk-system-tray",
                           ki18n("Nepomuk Controller"),
                           "0.3",
                           ki18n("A small tool to monitor and control Nepomuk services"),
