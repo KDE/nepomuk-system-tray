@@ -2,21 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=NepomukSystray/Plugin
 Name=Nepomuk System Tray Plugin
-Name[bs]=Priključak u sistemskom uglu za Nepomuk
-Name[da]=Statusområde-plugin til Nepomuk
-Name[en_GB]=Nepomuk System Tray Plugin
-Name[es]=Complemento de la bandeja del sistema para Nepomuk
-Name[et]=Nepomuki süsteemisalve plugin
-Name[fr]=Module externe Nepomuk pour la boîte à miniatures
-Name[nb]=Programtillegg for Nepomuk i systemkurven
-Name[nds]=Nepomuk-Systemafsnittmoduul
-Name[nl]=Plugin voor systeemvak van Nepomuk
-Name[pt]='Plugin' da Bandeja do Nepomuk
-Name[pt_BR]=Plug-in da área de notificação para o Nepomuk
-Name[sv]=Nepomuk insticksprogram för systembrickan
-Name[uk]=Додаток системного лотка Nepomuk
-Name[x-test]=xxNepomuk System Tray Pluginxx
-Name[zh_TW]=Nepomuk 系統匣外掛程式
 
 [PropertyDef::X-KDE-PluginInfo-Name]
 Type=QString
