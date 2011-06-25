@@ -21,15 +21,18 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QSizePolicy>
+#include <QtCore/QtDebug>
+#include <QtCore/QObject>
 #include <KDebug>
 
 using namespace Nepomuk;
 
-MainWidget::MainWidget(KXMLGUIFactory * factory, QWidget * parent ):
+MainWidget::MainWidget(KXMLGUIFactory * factory, QWidget * parent, int approxWidgetsShown ):
     QWidget(parent)
 {
     this->setupUi(this); 
     this->setAttribute(Qt::WA_DeleteOnClose,false);
+    this->servicesArea->setWidgetResizable(true);
     //m_pluginLayout = new QVBoxLayout();
     //m_pluginLayout->setObjectName("pluginLayout");
     
@@ -42,23 +45,78 @@ MainWidget::MainWidget(KXMLGUIFactory * factory, QWidget * parent ):
     //this->servicesAreaContents->setLayout(m_pluginLayout);
 
     m_factory = factory;
+    if ( approxWidgetsShown < 1 )
+        m_approxWidgetsShown = 1;
+    else
+        m_approxWidgetsShown = approxWidgetsShown;
+
+    connect( this->showAllCheckBox, SIGNAL(toggled(bool)),
+            this, SLOT(showAll(bool))
+           );
 }
 
 void MainWidget::addPlugin( SystrayPlugin * plugin )
 {
     SystrayServiceWidget * w = new SystrayServiceWidget(plugin,m_factory);
 
-    if ( !plugin->userOriented()) {
+#if 0
+    if ( !w->userOriented()) {
         // Hide it if checkbox is not selected
         if ( !showAllCheckBox->isChecked() ) {
             w->hide();
         }
         // Attach it to the signal
+        /*
         connect( this->showAllCheckBox, SIGNAL(toggled(bool)),
                 w, SLOT(setShown(bool))
                );
+               */
     }
+#endif
     this->pluginLayout->insertWidget(0,w);
     w->setFrameStyle(QFrame::Raised|QFrame::StyledPanel);
     w->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+    pluginWidgets << w;
+    showAll(showAllCheckBox->isChecked());
+}
+
+void MainWidget::showAll(bool toggled)
+{
+    
+    int result_height = 0;
+    int width = showAllCheckBox->size().width();
+
+    int count = 0;
+
+    foreach(SystrayServiceWidget * wc, pluginWidgets)
+    {
+
+        QSize size = wc->size();
+
+        if ( toggled or wc->userOriented() ) {
+            // Adjust size only if it is not too much already
+            // and QSize object is valid
+            if ( count <= m_approxWidgetsShown  and size.isValid() )
+                // Dirty hack
+                result_height += size.height();
+            wc->show();
+            count++;
+        }
+        else 
+            wc->hide();
+
+        width = qMax(width,size.width());
+        
+    }
+
+    //qDebug() << "Childrens: " << count;
+    //qDebug() << "Result size hint " << QSize(width,result_height);
+
+    //this->servicesAreaContents->adjustSize();
+    //qDebug() << "Area size " << this->realMainWidget->size();
+    //qDebug() << "Area size hint" << this->realMainWidget->sizeHint();
+    this->resize(
+            this->size().width(), // dirty hack 
+            result_height + showAllCheckBox->height()*1.5 + 100);
+
 }

@@ -28,15 +28,37 @@ class KXMLGUIFactory;
 
 namespace Nepomuk {
     class SystrayPlugin;
+    class SystrayServiceWidget;
     class MainWidget : public QWidget, public Ui_mainWidget
     {
         Q_OBJECT;
         public:
-            explicit MainWidget(KXMLGUIFactory * factory, QWidget * parent = 0);
+            /*! \brief Constructor
+             * \param approxWidgetsShown - This parameter is used to determine size
+             * of main widget. The height of widget will be approximately
+             *  approxWidgetsShown*height_of_service_widgets. 
+             */
+            explicit MainWidget(KXMLGUIFactory * factory, QWidget * parent = 0, int approxWidgetsShown = 5);
             void addPlugin( SystrayPlugin * plugin);
+        //Q_SIGNALS:
+            /* This signal is necessary for top window
+             * to change it's size accordingly
+             */
+            void updateSize() {
+                showAll(showAllCheckBox->isChecked());
+            }
+        private Q_SLOTS:
+            void showAll(bool);
         private:
             QVBoxLayout * m_pluginLayout;
             KXMLGUIFactory * m_factory;
+            // This memeber is only necessary 
+            // to adjust size of main widget dynamically.
+            // When number of services displayed changes,
+            // function will determine how many plugins are
+            // visible and create new size of main widget.
+            QList<SystrayServiceWidget*> pluginWidgets;
+            int  m_approxWidgetsShown;
     };
 }
 #endif

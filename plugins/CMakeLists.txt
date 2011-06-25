@@ -39,4 +39,4 @@ endmacro(BUILDINSTALL_STANDARD_PLUGIN)
 
 BUILDINSTALL_STANDARD_PLUGIN( "nepomukqueryservice.desktop" nepomukqueryservice "" "Nepomuk query service ")
 BUILDINSTALL_STANDARD_PLUGIN( "nepomukstorage.desktop" nepomukstorage "" "Nepomuk storage ")
-BUILDINSTALL_STANDARD_PLUGIN( "nepomukfilewatch.desktop" nepomukremovablestorageservice "" "Nepomuk removable storage service")
+BUILDINSTALL_STANDARD_PLUGIN( "nepomukfilewatch.desktop" nepomukfilewatch "" "Nepomuk file watch service")

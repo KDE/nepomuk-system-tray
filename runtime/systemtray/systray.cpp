@@ -186,6 +186,9 @@ void Nepomuk::SystemTray::finishOurInitialization()
     m_timer->setSingleShot(false);
     m_timer->start();
 
+    // Redrawing main widget
+    m_mainWidget->updateSize();
+
 }
 
 void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin, Nepomuk::SystrayPlugin::ShortStatus status)

@@ -127,6 +127,11 @@ void SystrayServiceWidget::setShown(bool shown)
         this->hide();
 }
 
+bool SystrayServiceWidget::userOriented() const
+{
+    return d->plugin->userOriented();
+}
+
 QString SystrayServiceWidget::shortStatusLabelText(SystrayPlugin::ShortStatus status)
 {
     static QString shortStatusStringTemplate = QString::fromLatin1("<font color='%1'>%2</font>");
