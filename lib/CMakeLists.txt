@@ -1,5 +1,4 @@
 # Add library
-set( LIB_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
 
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
@@ -14,8 +13,8 @@ set ( NSTL_HEADERS
     nepomuksystray_export.h
     )
 
-qt4_add_dbus_interface(NSTL_SOURCES ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.nepomuk.ServiceManager.xml servicemanagerinterface)
-qt4_add_dbus_interface(NSTL_SOURCES ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.nepomuk.ServiceControl.xml servicecontrolinterface)
+qt4_add_dbus_interface(NSTL_SOURCES ${kde-runtime_DBUS_DIR}/org.kde.nepomuk.ServiceManager.xml servicemanagerinterface)
+qt4_add_dbus_interface(NSTL_SOURCES ${kde-runtime_DBUS_DIR}/org.kde.nepomuk.ServiceControl.xml servicecontrolinterface)
 
 kde4_add_library( nepomuk_systray SHARED ${NSTL_SOURCES})
 target_link_libraries(nepomuk_systray
@@ -30,6 +29,6 @@ target_link_libraries(nepomuk_systray
 install(TARGETS nepomuk_systray ${INSTALL_TARGETS_DEFAULT_ARGS} ) 
 install(
     FILES ${NSTL_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include 
+    DESTINATION ${INCLUDE_INSTALL_DIR}  COMPONENT Devel
     )
     

@@ -35,10 +35,10 @@ class SystrayPluginManager::Private
 SystrayPluginManager::SystrayPluginManager():
     d(new Private())
 {
-    KService::List offers = KServiceTypeTrader::self()->query("NepomukSystray/Plugin");
+    KService::List offers = KServiceTypeTrader::self()->query(QLatin1String("NepomukSystray/Plugin"));
  
     KService::List::const_iterator iter;
-    for(iter = offers.begin(); iter < offers.end(); ++iter)
+    for(iter = offers.constBegin(); iter < offers.constEnd(); ++iter)
     {
         QString error;
         KService::Ptr service = *iter;
@@ -56,7 +56,7 @@ SystrayPluginManager::SystrayPluginManager():
         Nepomuk::SystrayPlugin *plugin = factory->create<Nepomuk::SystrayPlugin>(this);
  
        if (plugin) {
-           QString systemname = service->property("X-KDE-PluginInfo-Name",QVariant::String).toString();
+           const QString systemname = service->property(QLatin1String("X-KDE-PluginInfo-Name"),QVariant::String).toString();
            plugin->setObjectName(systemname);
            kDebug() << "Load plugin:" << service->name(); 
            // Add it to the list
@@ -81,5 +81,7 @@ SystrayPluginManager* SystrayPluginManager::self()
 }
 
 SystrayPluginManager::~SystrayPluginManager()
-{; }
+{ 
+   delete d; 
+}
 

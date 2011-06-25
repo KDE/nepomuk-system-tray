@@ -38,7 +38,7 @@ SystrayServiceWidget::SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactor
     d(new Private())
 {
     this->setupUi(this);
-    this->infoPushButton->setIcon(KIcon("dialog-information"));
+    this->infoPushButton->setIcon(KIcon(QLatin1String("dialog-information")));
 
     d->plugin = plugin;
     if (!factory) {
@@ -64,6 +64,11 @@ SystrayServiceWidget::SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactor
     }
 }
 
+SystrayServiceWidget::~SystrayServiceWidget()
+{
+    delete d;
+}
+
 void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
 {
     // It only works if we do not allow to change d->plugin in runtime
@@ -84,7 +89,7 @@ void SystrayServiceWidget::doInit(SystrayPlugin * plugin)
     this->nameLabel->setText(plugin->serviceName());
 
     // Get menu
-    QWidget * w = d->factory->container(plugin->dbusServiceName() + "_actions",plugin);
+    QWidget * w = d->factory->container(plugin->dbusServiceName() + QLatin1String("_actions"),plugin);
     KMenu * actionsMenu = qobject_cast<KMenu*>(w);
     if (!actionsMenu) {
         kDebug() << "Failed to retrieve menu";
@@ -124,7 +129,7 @@ void SystrayServiceWidget::setShown(bool shown)
 
 QString SystrayServiceWidget::shortStatusLabelText(SystrayPlugin::ShortStatus status)
 {
-    static QString shortStatusStringTemplate = QString("<font color='%1'>%2</font>");
+    static QString shortStatusStringTemplate = QString::fromLatin1("<font color='%1'>%2</font>");
     QColor textColor;
     switch(status)
     {

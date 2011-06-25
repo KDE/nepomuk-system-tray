@@ -28,9 +28,7 @@
 
 #include "systrayplugin.h"
 
-class QAction;
 class QTimer;
-class KDualAction;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
 

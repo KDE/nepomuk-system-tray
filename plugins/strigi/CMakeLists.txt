@@ -8,7 +8,7 @@ set( NST_ST_SOURCES
     )
 
 # Adding interfaces
-qt4_add_dbus_interface(NST_ST_SOURCES ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.nepomuk.Strigi.xml strigiserviceinterface)
+qt4_add_dbus_interface(NST_ST_SOURCES ${kde-runtime_DBUS_DIR}/org.kde.nepomuk.Strigi.xml strigiserviceinterface)
 
 kde4_add_plugin( nepomuksystray_strigi ${NST_ST_SOURCES} )
 
