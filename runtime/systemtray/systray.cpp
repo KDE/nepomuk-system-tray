@@ -207,7 +207,52 @@ void Nepomuk::SystemTray::updateToolTip(Nepomuk::SystrayPlugin * plugin, Nepomuk
 void Nepomuk::SystemTray::buildToolTip()
 {
     //kDebug() << "ToolTip: " << m_statusCache.join("\n");
-    this->setToolTipSubTitle(m_statusCache.join(QLatin1String("\n")));
+    //this->setToolTipSubTitle(m_statusCache.join(QLatin1String("\n")));
+    int running = 0;
+    int notRunning = 0;
+    for( QHash<SystrayPlugin *,int>::const_iterator pit = m_pluginsIndexes.begin();
+            pit != m_pluginsIndexes.end();
+            ++pit
+       )
+    {
+        SystrayPlugin * plugin = pit.key();
+        int shortStatus = plugin->shortStatus(); 
+        if ( shortStatus == SystrayPlugin::Running or 
+                shortStatus == SystrayPlugin::Suspended or 
+                shortStatus == SystrayPlugin::Idle
+           )
+            running++;
+        else
+            notRunning++;
+    }
+
+    QString toolTipText;
+    if ( running > 0 and notRunning > 0 ) {
+       toolTipText =  
+            QString(
+                i18nc(
+                    "info@status Summary of service statuses in tooltip."
+                    "Not running means failed with error or didn't start at all"
+                    "Running means service successfully launched",
+                    "Not Running: %1 Running: %2",
+                    QString::number(notRunning),
+                    QString::number(running)
+                    )
+                );
+    }
+    else if ( running == 0 ) {
+        toolTipText = i18nc(
+                "info@status All services are not running( failed or not started",
+                "No running services"
+                );
+    }
+    else {
+        toolTipText = i18nc(
+                "info@status All services started and none failed",
+                "All services running"
+                );
+    }
+    this->setToolTipSubTitle(toolTipText);
 }
 
 void Nepomuk::SystemTray::updateStatuses()
