@@ -68,7 +68,6 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
              this, SLOT( slotConfigure() ) );
     KXMLGUIClient::actionCollection()->addAction(QLatin1String("configNepomuk"),configAction);
 
-    KStandardAction::quit(kapp, SLOT(quit()), KXMLGUIClient::actionCollection());
 
     // Adding client
     m_factory->addClient(this);

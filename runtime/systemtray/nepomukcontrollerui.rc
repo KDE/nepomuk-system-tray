@@ -10,6 +10,5 @@
       <Merge/>
       <Separator/>
       <Action name="configNepomuk" />
-      <Action name="file_quit" />
     </Menu>
 </gui>
