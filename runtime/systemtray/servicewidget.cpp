@@ -23,6 +23,8 @@
 #include <KDebug>
 #include <KMenu>
 
+#include <QtGui/QMessageBox>
+
 using namespace Nepomuk;
 
 class SystrayServiceWidget::Private
@@ -39,6 +41,9 @@ SystrayServiceWidget::SystrayServiceWidget(SystrayPlugin * plugin, KXMLGUIFactor
 {
     this->setupUi(this);
     this->infoPushButton->setIcon(KIcon(QLatin1String("dialog-information")));
+    connect( this->infoPushButton, SIGNAL(clicked()),
+	    this, SLOT(onShowInfo())
+	   );
 
     d->plugin = plugin;
     if (!factory) {
@@ -117,6 +122,17 @@ void SystrayServiceWidget::onShortStatusChanged(SystrayPlugin* plugin, SystrayPl
 
 void SystrayServiceWidget::onStatusMessageChanged(Nepomuk::SystrayPlugin*,QString message)
 {
+}
+
+void SystrayServiceWidget::onShowInfo()
+{
+    QString description;
+    if ( d->plugin->isInitialized() )
+	description = d->plugin->serviceDescription();
+    else
+	description = i18nc("@info:status Plugin has not initialize yet.","Plugin has not initialize yet. Try few miliseconds later"); 
+
+    QMessageBox::information(this,d->plugin->serviceName(),description);
 }
 
 void SystrayServiceWidget::setShown(bool shown)
