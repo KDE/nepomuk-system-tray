@@ -357,13 +357,13 @@ namespace Nepomuk
              virtual QDBusPendingCallWatcher * isServiceRunningRequest()
              {return 0;}
 
-	 protected slots:
-	     /* This slots are used in some plugin implementation. When your service
-	      * has some signal and emiting this signal can be interpreted as 
-	      * changing service status, you may wish to connect this signal
-	      * to shortStatusUpdate() and  optionaly to serviceStatusMessageUpdate()
-	      * It will provide more quick redrawing of connected widgets
-	      */
+         protected slots:
+             /* This slots are used in some plugin implementation. When your service
+              * has some signal and emiting this signal can be interpreted as 
+              * changing service status, you may wish to connect this signal
+              * to shortStatusUpdate() and  optionaly to serviceStatusMessageUpdate()
+              * It will provide more quick redrawing of connected widgets
+              */
 
              /*! \brief This function updates short status of the service
               * This function has to update the short status of the service and 
