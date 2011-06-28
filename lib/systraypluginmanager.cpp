@@ -36,6 +36,7 @@ SystrayPluginManager::SystrayPluginManager():
     d(new Private())
 {
     KService::List offers = KServiceTypeTrader::self()->query(QLatin1String("NepomukSystray/Plugin"));
+    qDebug() << "Loading plugins. Discovered: " << offers.size();
  
     KService::List::const_iterator iter;
     for(iter = offers.constBegin(); iter < offers.constEnd(); ++iter)
@@ -63,9 +64,10 @@ SystrayPluginManager::SystrayPluginManager():
            d->plugins.append(plugin);
 
        } else {
-           kDebug() << error;
+           kDebug() << "Failed to load plugin." << error;
        }
     }
+    qDebug() << "Loaded plugins: " << d->plugins.size();
 
 }
 

@@ -28,7 +28,7 @@
 
 int main( int argc, char *argv[] )
 {
-    KAboutData aboutData( "nepomukcontroller",
+    KAboutData aboutData( "nepomuksystray_qt",
                           "nepomuk-system-tray",
                           ki18n("Nepomuk Controller"),
                           "0.3",

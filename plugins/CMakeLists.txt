@@ -30,11 +30,11 @@ macro(BUILDINSTALL_STANDARD_PLUGIN _servicedesktopfile _dbusname _service_descri
 
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/nepomuksystray_${_dbusname}.desktop
-      DESTINATION ${SERVICES_INSTALL_DIR}/nepomukcontroller
+	DESTINATION ${SERVICES_INSTALL_DIR}/nepomuksystray_qt
       )
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/systray${_dbusname}pluginui.rc 
-               DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 
+      DESTINATION  ${DATA_INSTALL_DIR}/nepomuksystray_qt) 
 endmacro(BUILDINSTALL_STANDARD_PLUGIN)
 
 BUILDINSTALL_STANDARD_PLUGIN( "nepomukqueryservice.desktop" nepomukqueryservice "" "Nepomuk query service ")

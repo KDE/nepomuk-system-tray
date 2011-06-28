@@ -28,8 +28,8 @@ install(
 
 install(
   FILES nepomuksystray_strigi.desktop
-  DESTINATION ${SERVICES_INSTALL_DIR}/nepomukcontroller
+  DESTINATION ${SERVICES_INSTALL_DIR}/nepomuksystray_qt
   )
 
 install(FILES systraystrigipluginui.rc 
-           DESTINATION  ${DATA_INSTALL_DIR}/nepomukcontroller) 
+           DESTINATION  ${DATA_INSTALL_DIR}/nepomuksystray_qt) 
