@@ -58,7 +58,7 @@ SystrayPluginManager::SystrayPluginManager():
        if (plugin) {
            const QString systemname = service->property(QLatin1String("X-KDE-PluginInfo-Name"),QVariant::String).toString();
            plugin->setObjectName(systemname);
-           kDebug() << "Load plugin:" << service->name(); 
+           kDebug() << "Load plugin:" << service->name() << " defined in " << service->entryPath(); 
            // Add it to the list
            d->plugins.append(plugin);
 
