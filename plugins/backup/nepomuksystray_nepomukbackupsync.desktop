@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=NepomukSystray/Plugin
+X-KDE-Library=nepomuksystray_nepomukbackupsync
+X-KDE-PluginInfo-Name=Backup and Sync
+Name=Backup and Sync system tray plugin
+
+

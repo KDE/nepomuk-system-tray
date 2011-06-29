@@ -7,8 +7,23 @@
                          http://www.kde.org/standards/kxmlgui/1.0/kxmlgui.xsd" >
  
     <Menu name="trayMenu" >
+        <!-- trayMenu are action that are show when user left-clicked
+              on the system tray icon. If you export more  then one action,
+              then put them in submenu. Don't put a lot of actions there,
+              only most usefull
+          -->
+        <!-- Add actions here
+             <Action name="name as in source file" />
+         --> 
     </Menu>
     <Menu name="@_dbusname@_actions">
+        <!-- This menu is show when user press a button in the system tray widget.
+             You can build here as much submenu as you wish. Just make everything 
+             usable
+             -->
+        <!-- Also you should add actions here.
+             <Action name="name as in source file" />
+         -->
     </Menu>
 </gui>
 

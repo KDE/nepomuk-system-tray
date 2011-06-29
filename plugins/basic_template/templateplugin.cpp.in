@@ -78,6 +78,9 @@ class @_dbusname@SystrayPlugin::Private
              this, SLOT( slotMyServiceSuspend( bool ) ) );
      *
      * actionCollection()->addAction(QLatin1String("suspresMyService",d->action1);
+     *
+     * For every action you should add record to systray@_dbusname@pluginui.rc.
+     * See this file for more info
      */
 
 

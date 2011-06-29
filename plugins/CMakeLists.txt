@@ -1,6 +1,6 @@
 # Add plugins directories here
 add_subdirectory(strigi)
-add_subdirectory(test)
+add_subdirectory(backup)
 
 install(
   FILES nepomuksystray_plugin.desktop
