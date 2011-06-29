@@ -20,6 +20,11 @@
 
 #include "@_dbusname@plugin.h"
 
+/* Uncomment next line if you need DBus interface. See CMakeLists.txt
+ * for the name of the generated header
+ */
+// #include <@_dbusname@serviceinterface.h>
+
 #include <KPluginFactory>
 #include <KGuiItem>
 #include <KLocale>
@@ -35,6 +40,12 @@ K_EXPORT_PLUGIN(@_dbusname@SystrayPluginFactory("systray@_dbusname@plugin"))
 
 class @_dbusname@SystrayPlugin::Private
 {
+    /* Add your  members here - DBus interfaces, actions and so on.
+     * Example:
+     * OrgKdeNepomukXXXInterface * interface;
+     * KDualAction * action1
+     */
+
 };
 
 @_dbusname@SystrayPlugin::@_dbusname@SystrayPlugin( QObject * parent,const QList<QVariant>&):
@@ -44,31 +55,80 @@ class @_dbusname@SystrayPlugin::Private
             parent),
     d(new Private())
 {
-    /* Init XMLGUI part */
+    /* Init XMLGUI part. Usually you should not change this line -
+     * it is perfectly correct
+     */
     setXMLFile(QLatin1String("systray@_dbusname@pluginui.rc"));
 
     /* Init service and actions */
-    //this->setServiceDescription("@_service_description@");
+
+    /* You need to init description only if your are not satisfied 
+     * with description in .desktop file. Usually it is good
+     * enough so you may want to leave this line commented
+     */
+    //this->setServiceDescription(i18n("My custom description"));
+    
+    /* You should add actions here. Example:
+     * d->action1 = new KDualAction(0);
+     * d->action1->setActiveGui
+     * d->action1->setActiveGuiItem( KGuiItem( i18n( "Resume My Service" ) ) );
+     * d->action1->setInactiveGuiItem( KGuiItem( i18n( "Suspend My Service" ) ) );
+     * d->action1->setToolTip( i18n( "Suspend or resume my service manually" ) );
+     * connect( d->action1, SIGNAL( activeChangedByUser( bool ) ),
+             this, SLOT( slotMyServiceSuspend( bool ) ) );
+     *
+     * actionCollection()->addAction(QLatin1String("suspresMyService",d->action1);
+     */
+
 
 }
 
 
 void @_dbusname@SystrayPlugin::doInit()
 {
+    /* Here your should create your dbus interfaces and connect 
+     * them to your slots. Base class provide you with following functions:
+     * dbusServiceName() - return name of the service. Expression QLatin1Char('/') + 
+     * dbusServiceName() will give you object to bind to.
+     * dbusServiceAddress() - return dbus address of the service.
+     *
+     * Example:
+     * d->interface = new OrgKdeNepomukXXXInterface(dbusServiceAddress(), 
+     *       QLatin1Char('/') + dbusServiceName(),
+     *      QDBusConnection::sessionBus(),
+     *      this);
+     */
+
+    /* Then you should connect dbus signals to slots. If you don't have any
+     * signals, then skip this part.
+     * Strigi export signal "statusChanged" and emit it when it changes between
+     * running, idle, suspended and other statuses.
+     * We connect this signal to slot shortStatusUpdate(), provided by base class.
+     * This method will  determine new status of the service and emit necessary 
+     * signals to the users of this plugin
+     * Example:
+     * connect(d->inteface,SIGNAL(statusChanged()),
+            this,SLOT(shortStatusUpdate()));
+     * !!! signal name 'statusChanged' is ONLY as example here. Other 
+     * services may export another signals
+     */
+
     ;
 }
 
 @_dbusname@SystrayPlugin::~@_dbusname@SystrayPlugin()
 {
-    //delete d->srAction;
+    // Delete members and private class here.
+    // DO NOT DELETE ACTIONS: It cause segfault for unknown reason:
+    // DONT! -> delete d->action1;
+
     delete d;
 }
 
 void @_dbusname@SystrayPlugin::serviceInitialized(bool success)
 {
-    setShortStatus(Running);
+    if ( success )
+        setShortStatus(Running);
+    else
+        setShortStatus(Failed);
 }
-
-
-
-

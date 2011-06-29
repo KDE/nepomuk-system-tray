@@ -29,18 +29,39 @@
 
 namespace Nepomuk
 {
+    /* This is the main class of your plugin */
     class @_dbusname@SystrayPlugin : public SystrayPlugin
     {
         Q_OBJECT;
         public:
+            /* Constructor and destructor.
+             * Do not init DBus things in constructor. You should only 
+             * init actions your private variables. Other stuff - to function
+             * doInit() */
             @_dbusname@SystrayPlugin(QObject *,const QList<QVariant>&);
             virtual ~@_dbusname@SystrayPlugin();
+            /* If true, then your plugin will be show by default to the user.
+             * If false, then it will be showh only when user press "Show all"
+             * checkbox in standad gui
+             * As a rule of thumb - return true only if your plugin exports 
+             * actions that user may want to interact with. Note, that you
+             * can also export actions for developer. If you export actions
+             * for developers only, then return false.
+             */
             virtual bool userOriented() const { return false; }
         protected:
+            /* This is function where you initialize DBus related interfaces,
+             * connect them to signals and so on
+             */ 
             virtual void doInit();
 
         protected Q_SLOTS:
 
+            /* This function is called automatically when service
+             * reports that it is initialized. This slot may be not 
+             * called if system tray is launched some time after the
+             * service. DO NOT RELY ON THIS SLOT
+             */
             virtual void serviceInitialized(bool);
         private:
             class Private;

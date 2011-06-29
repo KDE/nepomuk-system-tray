@@ -88,9 +88,6 @@ void StrigiSystrayPlugin::doInit()
     connect(d->strigiInteface,SIGNAL(statusChanged()),
             this,SLOT(shortStatusUpdate()));
 
-    //connect(d->strigiInteface,SIGNAL(statusChanged()),
-    //        this,SLOT(updateActions()));
-
     connect(this, SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
             this, SLOT(updateActions())
            );
