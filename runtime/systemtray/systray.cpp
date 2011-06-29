@@ -238,7 +238,7 @@ void Nepomuk::SystemTray::buildToolTip()
        toolTipText =  
             QString(
                 i18nc(
-                    "info@status Summary of service statuses in tooltip."
+                    "@info:tooltip Summary of service statuses in tooltip."
                     "Not running means failed with error or didn't start at all"
                     "Running means service successfully launched",
                     "Not Running: %1 Running: %2",
@@ -249,13 +249,13 @@ void Nepomuk::SystemTray::buildToolTip()
     }
     else if ( running == 0 ) {
         toolTipText = i18nc(
-                "info@status All services are not running( failed or not started",
+                "@info:tooltip All services are not running( failed or not started",
                 "No running services"
                 );
     }
     else {
         toolTipText = i18nc(
-                "info@status All services started and none failed",
+                "@info:tooltip All services started and none failed",
                 "All services running"
                 );
     }
