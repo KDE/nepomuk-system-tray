@@ -11,6 +11,7 @@
     </Menu>
     <Menu name="nepomukbackupsync_actions">
         <Action name="backup" />
+        <Action name="startStop" />
     </Menu>
 </gui>
 

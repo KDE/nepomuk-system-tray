@@ -72,6 +72,13 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     // Adding client
     m_factory->addClient(this);
 
+
+    // Check for dev mode
+    KSharedConfig::Ptr cfg = KGlobal::config();
+    KConfigGroup group = cfg->group("main");
+    this->devMode = group.readEntry("devMode",false);
+    kDebug() << "Dev mode: " << this->devMode;
+    
     // Loading plugins
     loadPlugins();
 
@@ -119,7 +126,7 @@ void Nepomuk::SystemTray::loadPlugins()
                this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
               );
        m_pluginsCurrentlyInitializing += 1;
-       plugin->init();
+       plugin->init(this->devMode);
     }
 }
 
@@ -134,8 +141,8 @@ void Nepomuk::SystemTray::pluginInitialized(Nepomuk::SystrayPlugin * plugin)
     disconnect(plugin,SIGNAL(initializationFinished(Nepomuk::SystrayPlugin*)),
                this,SLOT(pluginInitialized(Nepomuk::SystrayPlugin*))
               );
-    // We connect plugin's signal shortStatusChanged with plugin's slot
-    // shortStatusRequest through our proxy signal because it is correct way.
+
+
     // Add it to the factory
     m_factory->addClient(plugin);
 

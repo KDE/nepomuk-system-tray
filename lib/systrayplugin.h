@@ -24,6 +24,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QMetaType>
+#include <QtDBus/QDBusError>
 
 #include <KXMLGUIClient>
 
@@ -86,6 +87,11 @@ namespace Nepomuk
              * method and this is the last part of the name of the endpoint for the 
              * service - org.kde.nepomuk.services.<dbusServiceName>. For example Strigi
              * has system name nepomukstigiservice.
+             * \param devMode Operation mode of plugin. In development mode ( \p devMode
+             * == true ) plugin may export extra actions, that make sense only for
+             * developers. Default is false
+             * \note For plugin developers - do not export restart/start/stop actions
+             * in developer mode, they will be appended automatically
              * @author Artem Serebriyskiy
              * 
              * In your own constructor you should usually perform the following actions
@@ -99,7 +105,7 @@ namespace Nepomuk
              * actionCollection()->addAction("action1",someAction);
              * @endcode 
              */
-            SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString dbusServiceName, QObject *); 
+            SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString dbusServiceName, QObject * parent = 0); 
 
             /*! \brief Returl the user-visible name of the Service
              * Example is "Strigi File Indexer". It is taken from the service .desktop
@@ -237,7 +243,7 @@ namespace Nepomuk
              * It is guarantee that init() will do the stuff only once - all
              * further calls will be silently ingored.
              */
-             void init();
+             void init(bool devMode);
          Q_SIGNALS:
              /*! \brief Emit this signal when you short status has changed
               */
@@ -334,7 +340,7 @@ namespace Nepomuk
               * You can do whatever you need here, but
               * <b>DO NOT SEND ANY SIGNALS</b>
               */
-             virtual void doInit() = 0;
+             virtual void doInit(bool devMode = false) = 0;
 
              /*! \brief Return a reply for the request about whether service is suspended
               * Return 0 if you don't support this functionality.
@@ -419,10 +425,14 @@ namespace Nepomuk
             void _k_serviceUnregistered();
             void _k_serviceOwnerChanged();
             //void _k_isServiceInitializedReplyHandler(QDBusPendingCallWatcher*);
-            void _k_performInit();
+            void _k_performInit(bool);
             void _k_ssr_stage2(QDBusPendingCallWatcher* = 0);
             void _k_ssr_stage3(QDBusPendingCallWatcher* = 0);
             void _k_ssr_stage4(QDBusPendingCallWatcher* = 0);
+            void  updateDevActions();
+            void slotStartStop(bool);
+            void _dev_startServiceFailed(QDBusError error);
+            void _dev_startServiceFinished();
 
         private:
              void callWithNull(const char * answerSlot) const;

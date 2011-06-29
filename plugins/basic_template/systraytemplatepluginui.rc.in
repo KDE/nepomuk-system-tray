@@ -24,6 +24,8 @@
         <!-- Also you should add actions here.
              <Action name="name as in source file" />
          -->
+         <!-- This is system action. Do not remove it -->
+         <Action name="startStop" />
     </Menu>
 </gui>
 

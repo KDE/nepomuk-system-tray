@@ -87,7 +87,7 @@ class @_dbusname@SystrayPlugin::Private
 }
 
 
-void @_dbusname@SystrayPlugin::doInit()
+void @_dbusname@SystrayPlugin::doInit(bool)
 {
     /* Here your should create your dbus interfaces and connect 
      * them to your slots. Base class provide you with following functions:

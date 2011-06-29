@@ -11,6 +11,7 @@
     </Menu>
     <Menu name="nepomukstrigiservice_actions">
       <Action name="suspresStrigi" />
+      <Action name="startStop" />
     </Menu>
 </gui>
 

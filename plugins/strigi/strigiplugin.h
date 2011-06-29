@@ -37,7 +37,7 @@ namespace Nepomuk
             virtual ~StrigiSystrayPlugin();
             virtual bool userOriented() const { return true; }
         protected:
-            virtual void doInit();
+            virtual void doInit(bool devMode);
             /*! \brief Special method that is called by default when D-Bus status of the service is changed
              * This method is called by \fn serviceRegistered , \fn serviceUnregistered
              * \fn serviceOwnerChanged 

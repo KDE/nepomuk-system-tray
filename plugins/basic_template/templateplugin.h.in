@@ -53,7 +53,7 @@ namespace Nepomuk
             /* This is function where you initialize DBus related interfaces,
              * connect them to signals and so on
              */ 
-            virtual void doInit();
+            virtual void doInit(bool);
 
         protected Q_SLOTS:
 

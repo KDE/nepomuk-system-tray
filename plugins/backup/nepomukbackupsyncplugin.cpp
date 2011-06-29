@@ -76,7 +76,7 @@ nepomukbackupsyncSystrayPlugin::nepomukbackupsyncSystrayPlugin( QObject * parent
 }
 
 
-void nepomukbackupsyncSystrayPlugin::doInit()
+void nepomukbackupsyncSystrayPlugin::doInit(bool)
 {
     ;
 }

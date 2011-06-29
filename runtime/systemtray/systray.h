@@ -78,6 +78,7 @@ namespace Nepomuk {
             MainWidget * m_mainWidget;
             QTimer * m_timer;
             int m_updateInterval;
+	    bool devMode;
 
     };
 }

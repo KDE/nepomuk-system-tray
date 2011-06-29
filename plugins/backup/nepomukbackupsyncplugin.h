@@ -51,9 +51,12 @@ namespace Nepomuk
             virtual bool userOriented() const { return true; }
         protected:
             /* This is function where you initialize DBus related interfaces,
-             * connect them to signals and so on
+             * connect them to signals and so on. You can initialize actions
+             * here as well.
+             * devMode indicates a special mode, when you could provide
+             * extra actions, that are developers-only
              */ 
-            virtual void doInit();
+            virtual void doInit(bool devMode);
 
         protected Q_SLOTS:
 

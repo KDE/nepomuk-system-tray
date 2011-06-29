@@ -27,6 +27,8 @@
 #include <KDesktopFile>
 #include <KLocale>
 #include <KAction>
+#include <KActionCollection>
+#include <KDualAction>
 
 using namespace Nepomuk;
 
@@ -42,8 +44,12 @@ class SystrayPlugin::Private
         QDBusServiceWatcher * watcher;
         QStringList actionNamesCache;
         bool init;
+        bool devMode;
         ShortStatus serviceShortStatus;
+        KDualAction * startStopAction;
 };
+
+
 
 SystrayPlugin::SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString dbusServiceName, QObject * parent):
     QObject(parent),
@@ -58,15 +64,23 @@ SystrayPlugin::SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString db
     d->dbusServiceAddress = dbusBase.arg(dbusServiceName);
     d->controlInterface = 0;
     d->watcher = 0;
+    d->devMode = false;
+    d->startStopAction = 0;
+
+
 
 }
 
-void SystrayPlugin::init()
+void SystrayPlugin::init(bool devMode)
 {
-       QMetaObject::invokeMethod(this,"_k_performInit",Qt::QueuedConnection);
+    // init() must not be called from constructor. But because we have no control
+    // over it in derived plugins, it is easier to prevent bad 
+    // situations with this hack - init() actually calls _k_performInit 
+    // with queued connecteon
+       QMetaObject::invokeMethod(this,"_k_performInit",Qt::QueuedConnection, Q_ARG(bool,devMode));
 }
 
-void SystrayPlugin::_k_performInit()
+void SystrayPlugin::_k_performInit(bool devMode)
 {
     if ( !d->init) {
         // Trying to create service control interface
@@ -93,12 +107,43 @@ void SystrayPlugin::_k_performInit()
         connect(d->watcher,SIGNAL(serviceUnregistered(const QString &)),
                 this, SLOT(_k_serviceUnregistered())
                );
+        /* If we are in dev mode, then connect extra slots */
+
+        if (devMode) {
+            kDebug() << "Development mode enabled";
+            d->devMode = devMode;
+            // Init restart,stop,start actions
+            d->startStopAction = new KDualAction(0);
+            d->startStopAction->setActiveGuiItem( 
+                    KGuiItem( i18nc("@action:inmenu", "Start service" ) ) );
+            d->startStopAction->setInactiveGuiItem( 
+                    KGuiItem( i18nc("@action:inmenu", "Stop service" ) ) );
+            d->startStopAction->setToolTip( i18nc( "@info:tooltip",
+                        "Start/Stop service manually" ) );
+            connect( d->startStopAction, SIGNAL( activeChangedByUser( bool ) ),
+                     this, SLOT( slotStartStop( bool ) ) );
+            QList<QAction*> devActions;
+            devActions << d->startStopAction;
+            actionCollection()->addAction(QLatin1String("startStop"),d->startStopAction);
+
+            // Connect to signals
+            connect(d->watcher,SIGNAL(serviceUnregistered(const QString &)),
+                    this, SLOT(updateDevActions())
+                   );
+            connect(d->watcher,SIGNAL(serviceRegistered(const QString &)),
+                    this, SLOT(updateDevActions())
+                   );
+            connect(this,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
+                    this,SLOT(updateDevActions())
+                   );
+        }
+
         /*
         connect(d->watcher,SIGNAL(serviceOwnerChanged(const QString &)),
                 this, SLOT(_k_serviceOwnerChanged())
                );
                */
-        this->doInit();
+        this->doInit(devMode);
         d->init = true;
         emit initializationFinished(this); 
         setShortStatus(NotStarted);
@@ -333,6 +378,61 @@ void SystrayPlugin::callWithNull(const char * answerSlot) const
     QTimer::singleShot(0,const_cast<SystrayPlugin*>(this),answerSlot);
 }
 
+void SystrayPlugin::slotStartStop(bool)
+{
+    Q_CHECK_PTR(d->startStopAction);
+    Q_ASSERT(d->devMode);
+
+    if ( d->startStopAction->isActive() ) {
+        // Stop service
+        d->controlInterface->shutdown();
+        // Do not wait for answer as we are not interested in it
+    }
+    else {
+        // Start service
+        QDBusMessage msg = QDBusMessage::createMethodCall( 
+                QLatin1String("org.kde.NepomukServer"),
+                QLatin1String("/servicemanager"),
+                QLatin1String("org.kde.nepomuk.ServiceManager"),
+                QLatin1String("startService")
+                );
+        QList<QVariant> args;
+        args << QVariant(this->dbusServiceName());
+        msg.setArguments(args);
+        QDBusConnection::sessionBus().callWithCallback(msg,this,
+                SLOT(_dev_startServiceFinished()),
+                SLOT(_dev_startServiceFailed(QDBusError))
+                );
+    }
+
+    //kDebug() << "Start/Stop is called";
+
+}
+
+void SystrayPlugin::_dev_startServiceFailed(QDBusError error) { kDebug() << "Starting service failed" << error.message(); }
+void SystrayPlugin::_dev_startServiceFinished() { kDebug() << "Starging service finished"; }
+
+void SystrayPlugin::updateDevActions()
+{
+    if (!d->devMode)
+        return;
+
+    switch ( shortStatus() )
+    {
+        case ( NotStarted ):
+        case (Failed): {d->startStopAction->setActive(true);break;}
+        case (Launching):
+        case ( Idle ): 
+        case ( Running ) : 
+        case ( Suspended ) : {
+                               d->startStopAction->setActive(false);
+                               break;
+                           }
+        default : { kDebug() << "Unknow service status"; }
+    }
+}
+
+
 QString SystrayPlugin::shortStatusToString(ShortStatus status)
 {
    switch ( status )
@@ -347,3 +447,5 @@ QString SystrayPlugin::shortStatusToString(ShortStatus status)
    } 
    return QString();
 }
+
+// vim: set ts=8 sw=4 expandtab :
