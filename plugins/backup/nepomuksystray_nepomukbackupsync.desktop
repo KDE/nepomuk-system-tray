@@ -4,5 +4,9 @@ X-KDE-ServiceTypes=NepomukSystray/Plugin
 X-KDE-Library=nepomuksystray_nepomukbackupsync
 X-KDE-PluginInfo-Name=Backup and Sync
 Name=Backup and Sync system tray plugin
+Name[nl]=Plugin voor systeemvak van Reservekopie maken en Systeem synchroniseren
+Name[pt]='Plugin' da bandeja do sistema para a salvaguarda e sincronização
+Name[sv]=Insticksprogram för systembrickan med säkerhetskopiering och synkronisering
+Name[x-test]=xxBackup and Sync system tray pluginxx
 
 
