@@ -130,7 +130,7 @@ void SystrayServiceWidget::onShowInfo()
     if ( d->plugin->isInitialized() )
 	description = d->plugin->serviceDescription();
     else
-	description = i18nc("@info:status Plugin has not initialize yet.","Plugin has not initialize yet. Try few miliseconds later"); 
+	description = i18nc("@info:status Plugin has not initialize yet.","Plugin has not initialize yet. Try few milliseconds later"); 
 
     QMessageBox::information(this,d->plugin->serviceName(),description);
 }

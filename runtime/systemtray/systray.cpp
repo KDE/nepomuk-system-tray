@@ -256,7 +256,7 @@ void Nepomuk::SystemTray::buildToolTip()
     else {
         toolTipText = i18nc(
                 "@info:tooltip All services started and none failed",
-                "All services running"
+                "All services are running"
                 );
     }
     this->setToolTipSubTitle(toolTipText);
