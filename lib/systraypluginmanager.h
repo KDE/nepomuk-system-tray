@@ -20,6 +20,8 @@
 #define NEPOMUK_SYSTRAY_PLUGIN_MANAGER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtCore/QString>
 
 #include "nepomuksystray_export.h"
 namespace Nepomuk {
@@ -37,6 +39,8 @@ namespace Nepomuk {
              * All plugins has their names setup ( via setObjectName() )
              */
             QList<SystrayPlugin*> plugins() const;
+            SystrayPlugin * plugin( const QString & name) const;
+            QList<QString> pluginNames() const;
         private:
             SystrayPluginManager();
             ~SystrayPluginManager();

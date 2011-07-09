@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Nepomuk Services Engine
+Comment=Engine that feeds statuses of all Nepomuk services
+Type=Service
+ 
+X-KDE-ServiceTypes=Plasma/DataEngine
+X-KDE-Library=plasma_engine_nepomuk
+X-Plasma-EngineName=nepomuk
+X-KDE-PluginInfo-Author=Serebriyskiy Artem
+X-KDE-PluginInfo-Name=nepomuk
+X-KDE-PluginInfo-Email=v.for.vandal@gmail.com
+X-KDE-PluginInfo-License=LGPL
+X-KDE-PluginInfo-EnabledByDefault=true
