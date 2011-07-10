@@ -232,6 +232,15 @@ namespace Nepomuk
               */
              QString dbusServiceName() const;
 
+             /*! \brief Return system name of the service
+              * This is name that can be used by library users to
+              * recognize plugin. Short name, service name are subjects to
+              * translation because these names are for KDE user, but
+              * system name will remain the same as long as service 
+              * do exists ( or untill hard refactoring happens )
+              */
+             QString systemName() const { return dbusServiceName(); }
+
              /*! \brief Return the D-Bus address of the service
               * This is the addres of the service on the D-Bus
               */
@@ -258,6 +267,15 @@ namespace Nepomuk
               * <b> NEVER SEND IT MANUALLY </b>
               */
              void initializationFinished(Nepomuk::SystrayPlugin *);
+
+             /*! \brief This signal is emited when any property changed
+              * This includes properties declared with Q_PROPERTY and 
+              * changes in short status and status message.
+              * shortStatusChanged and statusMessageChanged will be forwarded
+              * automtaically. For other( aka custom ) properties this 
+              * signal must be emited manually
+              */
+             void changed(Nepomuk::SystrayPlugin*);
 
 
              /*! \brief This signal emitted with reply about short status of the service
@@ -363,6 +381,8 @@ namespace Nepomuk
              virtual QDBusPendingCallWatcher * isServiceRunningRequest()
              {return 0;}
 
+         protected:
+             //void exposeProperty( const char * propertyName );
          protected slots:
              /* This slots are used in some plugin implementation. When your service
               * has some signal and emiting this signal can be interpreted as 

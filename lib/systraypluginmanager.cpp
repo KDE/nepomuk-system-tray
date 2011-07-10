@@ -18,6 +18,9 @@
 #include "systraypluginmanager.h"
 #include "systrayplugin.h"
  
+#include <QtCore/QHash>
+#include <QtCore/QString>
+
 #include <KPluginFactory>
 #include <KService>
 #include <KServiceTypeTrader>
@@ -30,6 +33,7 @@ class SystrayPluginManager::Private
 {
     public:
         QList<SystrayPlugin*> plugins;
+        QHash<QString,SystrayPlugin*> pluginNameMap;
 };
 
 SystrayPluginManager::SystrayPluginManager():
@@ -57,11 +61,14 @@ SystrayPluginManager::SystrayPluginManager():
         Nepomuk::SystrayPlugin *plugin = factory->create<Nepomuk::SystrayPlugin>(this);
  
        if (plugin) {
-           const QString systemname = service->property(QLatin1String("X-KDE-PluginInfo-Name"),QVariant::String).toString();
+           //const QString systemname = service->property(QLatin1String("X-KDE-PluginInfo-Name"),QVariant::String).toString();
+           const QString systemname = plugin->systemName();
            plugin->setObjectName(systemname);
            kDebug() << "Load plugin:" << service->name() << " defined in " << service->entryPath(); 
            // Add it to the list
            d->plugins.append(plugin);
+
+           d->pluginNameMap[systemname] = plugin;
 
        } else {
            kDebug() << "Failed to load plugin." << error;
@@ -80,6 +87,23 @@ SystrayPluginManager* SystrayPluginManager::self()
 {
     static SystrayPluginManager * manager = new SystrayPluginManager();
     return manager;
+}
+
+SystrayPlugin * SystrayPluginManager::plugin( const QString & name) const
+{
+    QHash<QString,SystrayPlugin*>::const_iterator fit =
+        d->pluginNameMap.find(name);
+
+    if ( fit != d->pluginNameMap.end() ) {
+        return fit.value();
+    }
+
+    return 0;
+}
+
+QList<QString> SystrayPluginManager::pluginNames() const
+{
+    return d->pluginNameMap.keys();
 }
 
 SystrayPluginManager::~SystrayPluginManager()

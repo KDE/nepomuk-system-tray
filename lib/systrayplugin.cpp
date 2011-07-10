@@ -67,7 +67,17 @@ SystrayPlugin::SystrayPlugin(const KDesktopFile & serviceDesktopFile, QString db
     d->devMode = false;
     d->startStopAction = 0;
 
-
+    // Connect some signals
+    connect(this,
+            SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
+            this,
+            SIGNAL(changed(Nepomuk::SystrayPlugin*))
+           );
+    connect(this,
+            SIGNAL(statusMessageChanged(Nepomuk::SystrayPlugin*,QString)),
+            this,
+            SIGNAL(changed(Nepomuk::SystrayPlugin*))
+           );
 
 }
 
