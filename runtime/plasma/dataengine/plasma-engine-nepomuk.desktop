@@ -2,7 +2,7 @@
 Name=Nepomuk Services Engine
 Comment=Engine that feeds statuses of all Nepomuk services
 Type=Service
- 
+
 X-KDE-ServiceTypes=Plasma/DataEngine
 X-KDE-Library=plasma_engine_nepomuk
 X-Plasma-EngineName=nepomuk
