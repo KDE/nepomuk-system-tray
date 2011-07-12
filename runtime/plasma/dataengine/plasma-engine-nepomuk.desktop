@@ -1,6 +1,14 @@
 [Desktop Entry]
 Name=Nepomuk Services Engine
+Name[pt_BR]=Motor dos serviços do Nepomuk
+Name[sv]=Nepomuk tjänstgränssnitt
+Name[uk]=Рушій служб Nepomuk
+Name[x-test]=xxNepomuk Services Enginexx
 Comment=Engine that feeds statuses of all Nepomuk services
+Comment[pt_BR]=Motor que alimenta o estado de todos os serviços do Nepomuk
+Comment[sv]=Gränssnitt som skickar vidare status för alla Nepomuk-tjänster
+Comment[uk]=Рушій отримання даних щодо всіх служб Nepomuk
+Comment[x-test]=xxEngine that feeds statuses of all Nepomuk servicesxx
 Type=Service
 
 X-KDE-ServiceTypes=Plasma/DataEngine
