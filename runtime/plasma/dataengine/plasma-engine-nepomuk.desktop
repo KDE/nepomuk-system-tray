@@ -1,12 +1,14 @@
 [Desktop Entry]
 Name=Nepomuk Services Engine
 Name[nl]=Engine van Nepomuk-services
+Name[pt]=Motor de Serviços do Nepomuk
 Name[pt_BR]=Motor dos serviços do Nepomuk
 Name[sv]=Nepomuk tjänstgränssnitt
 Name[uk]=Рушій служб Nepomuk
 Name[x-test]=xxNepomuk Services Enginexx
 Comment=Engine that feeds statuses of all Nepomuk services
 Comment[nl]=Engine die alle Nepomuk-services van status voorziet
+Comment[pt]=Um motor que recolhe os estados de todos os serviços do Nepomuk
 Comment[pt_BR]=Motor que alimenta o estado de todos os serviços do Nepomuk
 Comment[sv]=Gränssnitt som skickar vidare status för alla Nepomuk-tjänster
 Comment[uk]=Рушій отримання даних щодо всіх служб Nepomuk
