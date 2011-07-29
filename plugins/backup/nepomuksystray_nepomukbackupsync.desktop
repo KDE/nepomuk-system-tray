@@ -6,6 +6,7 @@ X-KDE-PluginInfo-Name=Backup and Sync
 Name=Backup and Sync system tray plugin
 Name[da]=Statusområde-plugin til backup og synkronisering
 Name[fr]=Module externe de sauvegarde et de synchronisation pour la boîte à miniatures
+Name[nb]=Programtillegg for sikkerhetskopi og synkronisering i systemkurven
 Name[nl]=Plugin voor systeemvak van Reservekopie maken en Systeem synchroniseren
 Name[pt]='Plugin' da bandeja do sistema para a salvaguarda e sincronização
 Name[pt_BR]=Plug-in da área de notificação para realizar cópia de segurança e sincronização
