@@ -64,8 +64,8 @@ Nepomuk::SystemTray::SystemTray( QWidget* parent )
     KAction* configAction = new KAction( this );
     configAction->setText( i18n( "Configure Nepomuk" ) );
     configAction->setIcon( KIcon( QLatin1String("configure") ) );
-    connect( configAction, SIGNAL( triggered() ),
-             this, SLOT( slotConfigure() ) );
+    connect( configAction, SIGNAL(triggered()),
+             this, SLOT(slotConfigure()) );
     KXMLGUIClient::actionCollection()->addAction(QLatin1String("configNepomuk"),configAction);
 
 

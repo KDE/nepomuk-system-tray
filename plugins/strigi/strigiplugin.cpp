@@ -61,8 +61,8 @@ StrigiSystrayPlugin::StrigiSystrayPlugin( QObject * parent,const QList<QVariant>
     d->srAction->setActiveGuiItem( KGuiItem( i18n( "Resume File Indexing" ) ) );
     d->srAction->setInactiveGuiItem( KGuiItem( i18n( "Suspend File Indexing" ) ) );
     d->srAction->setToolTip( i18n( "Suspend or resume the file indexer manually" ) );
-    connect( d->srAction, SIGNAL( activeChangedByUser( bool ) ),
-             this, SLOT( slotSuspend( bool ) ) );
+    connect( d->srAction, SIGNAL(activeChangedByUser(bool)),
+             this, SLOT(slotSuspend(bool)) );
 
     actionCollection()->addAction(QLatin1String("suspresStrigi"),d->srAction);
     /*
@@ -172,7 +172,7 @@ void StrigiSystrayPlugin::_k_ua_stage2(QDBusPendingCallWatcher * watcher)
         return;
     }
 
-    isServiceSuspended(SLOT(_k_ua_stage3(QDBusPendingCallWatcher *)));
+    isServiceSuspended(SLOT(_k_ua_stage3(QDBusPendingCallWatcher*)));
 }
 
 void StrigiSystrayPlugin::_k_ua_stage3(QDBusPendingCallWatcher * watcher)

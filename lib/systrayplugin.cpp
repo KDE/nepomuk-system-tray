@@ -111,10 +111,10 @@ void SystrayPlugin::_k_performInit(bool devMode)
                 QDBusConnection::sessionBus(),
                 QDBusServiceWatcher::WatchForRegistration|QDBusServiceWatcher::WatchForUnregistration | QDBusServiceWatcher::WatchForOwnerChange,
                 this);
-        connect(d->watcher,SIGNAL(serviceRegistered(const QString &)),
+        connect(d->watcher,SIGNAL(serviceRegistered(QString)),
                 this, SLOT(_k_serviceRegistered())
                );
-        connect(d->watcher,SIGNAL(serviceUnregistered(const QString &)),
+        connect(d->watcher,SIGNAL(serviceUnregistered(QString)),
                 this, SLOT(_k_serviceUnregistered())
                );
         /* If we are in dev mode, then connect extra slots */
@@ -130,17 +130,17 @@ void SystrayPlugin::_k_performInit(bool devMode)
                     KGuiItem( i18nc("@action:inmenu", "Stop service" ) ) );
             d->startStopAction->setToolTip( i18nc( "@info:tooltip",
                         "Start/Stop service manually" ) );
-            connect( d->startStopAction, SIGNAL( activeChangedByUser( bool ) ),
-                     this, SLOT( slotStartStop( bool ) ) );
+            connect( d->startStopAction, SIGNAL(activeChangedByUser(bool)),
+                     this, SLOT(slotStartStop(bool)) );
             QList<QAction*> devActions;
             devActions << d->startStopAction;
             actionCollection()->addAction(QLatin1String("startStop"),d->startStopAction);
 
             // Connect to signals
-            connect(d->watcher,SIGNAL(serviceUnregistered(const QString &)),
+            connect(d->watcher,SIGNAL(serviceUnregistered(QString)),
                     this, SLOT(updateDevActions())
                    );
-            connect(d->watcher,SIGNAL(serviceRegistered(const QString &)),
+            connect(d->watcher,SIGNAL(serviceRegistered(QString)),
                     this, SLOT(updateDevActions())
                    );
             connect(this,SIGNAL(shortStatusChanged(Nepomuk::SystrayPlugin*,Nepomuk::SystrayPlugin::ShortStatus)),
@@ -149,7 +149,7 @@ void SystrayPlugin::_k_performInit(bool devMode)
         }
 
         /*
-        connect(d->watcher,SIGNAL(serviceOwnerChanged(const QString &)),
+        connect(d->watcher,SIGNAL(serviceOwnerChanged(QString)),
                 this, SLOT(_k_serviceOwnerChanged())
                );
                */
