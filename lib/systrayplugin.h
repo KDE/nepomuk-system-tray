@@ -29,7 +29,6 @@
 #include <KXMLGUIClient>
 
 #include "nepomuksystray_export.h"
-class KAction;
 class QDBusPendingCallWatcher;
 class KDesktopFile;
 
