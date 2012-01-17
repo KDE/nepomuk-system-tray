@@ -2,6 +2,7 @@
 Name=Nepomuk Services Engine
 Name[da]=Motor til Nepomuk-tjenester
 Name[es]=Motor de servicios de Nepomuk
+Name[et]=Nepomuki teenuste mootor
 Name[fr]=Moteur pour les services Nepomuk
 Name[nb]=Nepomuk tjenestemotor
 Name[nl]=Engine van Nepomuk-services
@@ -14,6 +15,7 @@ Name[x-test]=xxNepomuk Services Enginexx
 Comment=Engine that feeds statuses of all Nepomuk services
 Comment[da]=Motor der føder status for alle Nepomuk-tjenester
 Comment[es]=Motor que alimenta los estados de todos los servicios de Nepomuk
+Comment[et]=Kõigi Nepomuki teenuste olekuid toitev mootor
 Comment[fr]=Moteur affichant l'état de tous les services Nepomuk
 Comment[nb]=Motor som skaffer status for alle Nepomuk-tjenester
 Comment[nl]=Engine die alle Nepomuk-services van status voorziet
