@@ -5,6 +5,7 @@ X-KDE-Library=nepomuksystray_nepomukbackupsync
 X-KDE-PluginInfo-Name=Backup and Sync
 Name=Backup and Sync system tray plugin
 Name[da]=Statusområde-plugin til backup og synkronisering
+Name[de]=Sicherungs- und Abgleichmodul für den Systemabschnitt der Kontrollleiste
 Name[es]=Complemento de la bandeja del sistema para copias de respaldo y sincronización
 Name[et]=Varundamise ja sünkroonimise süsteemisalve plugin
 Name[fr]=Module externe de sauvegarde et de synchronisation pour la boîte à miniatures
