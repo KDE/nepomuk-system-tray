@@ -29,6 +29,7 @@ Comment=Plugin for the Nepomuk system tray that controls the Strigi service
 Comment[bs]=Priključak u sistemskom uglu za Nepomuk koji kontroliše Strigi servis
 Comment[cs]=Modul pro Nepomuk do systémové části panelu, který ovládá službu Strigi
 Comment[da]=Plugin til Nepomuk-statusikonet som kontrollerer tjenesten Strigi
+Comment[de]=Modul für Nepomuk im Systemabschnitt der Kontrollleiste. das den Strigi-Dienst steuert
 Comment[en_GB]=Plugin for the Nepomuk system tray that controls the Strigi service
 Comment[es]=Complemento de la bandeja del sistema para Nepomuk que controla el servicio de Strigi
 Comment[et]=Nepomuki süsteemisalve plugin, mis kontrollib Strigi teenust
